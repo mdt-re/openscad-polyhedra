@@ -24,10 +24,13 @@ For (semi-)regular polyhedra the circumradius intersects with all vertices, for 
 
 ## Examples
 
+See the [examples](examples) folder.
+
 
 ## Bugs and Feedback
 
 For bugs and feedback please use the [Github Issues](https://github.com/mdt-re/openscad-polyhedra/issues). Pull requests are also very much appreciated.
+
 
 ## More
 You can follow me on [mdt.re](http://mdt.re/blog) for more background information and other polyhedra-related topics.

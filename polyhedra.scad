@@ -23,26 +23,63 @@
  *  icosidodecahedron
  *  truncated_dodecahedron
  *  truncated_icosahedron
- *  rhombicosidodecahedron (TODO)
- *  truncated_icosidodecahedron (TODO)
+ *  rhombicosidodecahedron
+ *  truncated_icosidodecahedron
  *  snub_dodecahedron (MIRROR IMAGE TODO)
  * 
- * === Prisms & Antiprisms ===
+ * === Regular N-gon Polyhedra ===
  *  prism
  *  antiprism
+ *  trapezohedron (TODO)
+ *  star_prism (TODO)
+ *  star_dipyramid (TODO)
+ *
+ * === Catalon Solids ===
+ *  triakis_tetrahedron
+ *  rhombic_dodecahedron
+ *  tetrakis_hexahedron
+ *  rhombic_triacontahedron
+ *
+ * === Johnson Solids ===
+ *  triangular_copula
+ *  square_copula
+ *  pentagonal_copula
+ *  pentagonal_rotunda
+ *  
+ * === Regular Star Polyhedra ===
+ *  small_stellated_dodecahedron
  *
  *
  * Short usage documentation:
  *
- *  polyhedron(a = 1, r = 0, convexity = 1)
- *   a:          the length of an edge
- *   r:          radius of the circumscribed sphere (overwrites a if non-zero)
- *   convexity:  parameter of polyhedron function in OpenSCAD
- *
- *  (anti)prism(n = 3, a = 1, r = 0, convexity = 1)
- *   n:          the number of vertices/edges for the prism base faces
+ *  draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
+ *   id:         the name of the polyhedron
+ *   a:          [optional] the length of the base edge
+ *   n:          [optional] only for regular n-gon polyhedra
+ *               number of edges for the base n-gon
+ *   m:          [optional] only for regular star n-gon polyhedra
+ *               m completes the Schläfli symbol {n/m}
+ *   r:          [optional] radius of the circumscribed sphere (overwrites a if non-zero)
+ *   convexity:  [optional] parameter of polyhedron function in OpenSCAD
  *
 */
+
+
+/////////////////
+// Open Issues //
+/////////////////
+
+// Decide whether we want the shortest edge or longest edge to be unity for Catalan solids.
+
+// Mirror images for snub_cube and snub_dodecahedron. 
+
+// Fix inscribed circle radius for non-regular polygon faces.
+
+// Figure out circumradius for Johnson solids.
+
+// Implement height for several polyhedra categories: prism, antiprism.
+
+// Check preview for non-convex polyhedra with cut-outs.
 
 
 ///////////////
@@ -55,7 +92,7 @@ TRIBONACCI = (1 + pow(19 - 3 * sqrt(33), 1/3) + pow(19 + 3 * sqrt(33), 1/3)) / 3
 
 
 /////////////
-// General //
+// Drawing //
 /////////////
 	
 // Returns a list of the available polyhedra in this library.
@@ -64,57 +101,50 @@ function list_polyhedra() =
 	// Platonic solids.
 	"tetrahedron", "hexahedron", "octahedron", "dodecahedron", "icosahedron", 
 	// Archimedean solids.
-	"truncated_tetrahedron", "cuboctahedron", "truncated_cube", "truncated_octahedron", "rhombicuboctahedron", "truncated_cuboctahedron", "snub_cube", "icosidodecahedron", "truncated_dodecahedron", "truncated_icosahedron", /*"rhombicosidodecahedron", "truncated_icosidodecahedron",*/ "snub_dodecahedron",
-	// Prism, antiprism.
-	"prism", "antiprism"
+	"truncated_tetrahedron", "cuboctahedron", "truncated_cube", "truncated_octahedron", "rhombicuboctahedron", "truncated_cuboctahedron", "snub_cube", "icosidodecahedron", "truncated_dodecahedron", "truncated_icosahedron", "rhombicosidodecahedron", "truncated_icosidodecahedron", "snub_dodecahedron",
+	// Regular N-gon Polyhedra.
+	"prism", "antiprism", "trapezohedron", "star_prism", "star_dipyramid", 
+	// Catalan solids.
+	"triakis_tetrahedron", "rhombic_dodecahedron", "tetrakis_hexahedron", "rhombic_triacontahedron",
+	// Johnson solids.
+	"triangular_copula", "square_copula", "pentagonal_copula", "pentagonal_rotunda",
+	// Regular star polyhedra.
+	"small_stellated_dodecahedron"
 ];
 
 // Draws the specified polyhedron.
-module draw_polyhedron(id, a = 1, r = 0, convexity = 1)
-{ 
-	// Platonic solids.
-	if (id == "tetrahedron")
-		tetrahedron(a = a, r = r, convexity = convexity);
-	if (id == "hexahedron")
-		hexahedron(a = a, r = r, convexity = convexity);
-	if (id == "octahedron")
-		octahedron(a = a, r = r, convexity = convexity);
-	if (id == "dodecahedron")
-		dodecahedron(a = a, r = r, convexity = convexity);
-	if (id == "icosahedron")
-		icosahedron(a = a, r = r, convexity = convexity);
-	// Archimedean solids.
-	if (id == "truncated_tetrahedron")
-		truncated_tetrahedron(a = a, r = r, convexity = convexity);
-	if (id == "cuboctahedron")
-		cuboctahedron(a = a, r = r, convexity = convexity);
-	if (id == "truncated_cube")
-		truncated_cube(a = a, r = r, convexity = convexity);
-	if (id == "truncated_octahedron")
-		truncated_octahedron(a = a, r = r, convexity = convexity);
-	if (id == "rhombicuboctahedron")
-		rhombicuboctahedron(a = a, r = r, convexity = convexity);
-	if (id == "truncated_cuboctahedron")
-		truncated_cuboctahedron(a = a, r = r, convexity = convexity);
-	if (id == "snub_cube")
-		snub_cube(a = a, r = r, convexity = convexity);
-	if (id == "icosidodecahedron")
-		icosidodecahedron(a = a, r = r, convexity = convexity);
-	if (id == "truncated_dodecahedron")
-		truncated_dodecahedron(a = a, r = r, convexity = convexity);
-	if (id == "truncated_icosahedron")
-		truncated_icosahedron(a = a, r = r, convexity = convexity);
-	if (id == "rhombicosidodecahedron")
-		rhombicosidodecahedron(a = a, r = r, convexity = convexity);
-	if (id == "truncated_icosidodecahedron")
-		truncated_icosidodecahedron(a = a, r = r, convexity = convexity);
-	if (id == "snub_dodecahedron")
-		snub_dodecahedron(a = a, r = r, convexity = convexity);
-	// Prism, antiprism.
-	if (id == "prism")
-		prism(n = 3, a = a, r = r, convexity = convexity);
-	if (id == "antiprism")
-		antiprism(n = 3, a = a, r = r, convexity = convexity);
+module draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
+{
+	// TODO: test if id exists.
+	//echo(str("ERROR: called draw_polyhedron for non-existing polyhedron ", id, "."));
+	vertices = polyhedron_vertices(id, n = n, m = m);
+	faces = polyhedron_faces(id, n = n, m = m);
+	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
+	//number_vertices(vertices * side);
+	polyhedron(vertices * side, faces, convexity);
+}
+
+// Draws the specified polyhedron as a wire frame.
+module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
+{
+	vertices = polyhedron_vertices(id, n = n, m = m);
+	edges = polyhedron_edges(id, n = n, m = m);
+	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
+	for (e = edges)
+	{
+		v1 = side * vertices[e[0]];
+		v2 = side * vertices[e[1]];
+		c = (v1 + v2) / 2;
+		echo(rotation_to_points(v1, v2));
+		h = norm(v1 - v2);
+		translate(c)
+			rotate(rotation_to_points(v1, v2))
+				minkowski()
+				{
+					cylinder(h = h, r = 0.000001, center = true);
+					sphere(r = t, $fn = 64);
+				}
+	}
 }
 
 
@@ -238,9 +268,9 @@ module snub_dodecahedron(a = 1, r = 0, convexity = 1)
 }
 
 
-/////////////////////////
-// Prisms & Antiprisms //
-/////////////////////////
+/////////////////////////////
+// Regular N-gon Polyhedra //
+/////////////////////////////
 
 module prism(n = 3, a = 1, r = 0, convexity = 1)
 {
@@ -252,6 +282,70 @@ module antiprism(n = 3, a = 1, r = 0, convexity = 1)
 {
 	side = r == 0 ? a : r / CIRCUMRADIUS_ANTIPRISM(n);
 	polyhedron(VERTICES_ANTIPRISM(n) * side, FACES_ANTIPRISM(n), convexity);
+}
+
+module trapezohedron(n = 3, a = 1, r = 0, convexity = 1)
+{
+	side = r == 0 ? a : r / CIRCUMRADIUS_TRAPEZOHEDRON(n);
+	polyhedron(VERTICES_TRAPEZOHEDRON(n) * side, FACES_TRAPEZOHEDRON(n), convexity);
+}
+
+
+////////////////////
+// Catalan Solids //
+////////////////////
+
+module triakis_tetrahedron(a = 1, r = 0, convexity = 1)
+{
+	side = r == 0 ? a : r / CIRCUMRADIUS_TRIAKIS_TETRAHEDRON;
+	polyhedron(VERTICES_TRIAKIS_TETRAHEDRON * side, FACES_TRIAKIS_TETRAHEDRON, convexity);
+}
+
+module rhombic_dodecahedron(a = 1, r = 0, convexity = 1)
+{
+	side = r == 0 ? a : r / CIRCUMRADIUS_RHOMBIC_DODECAHEDRON;
+	polyhedron(VERTICES_RHOMBIC_DODECAHEDRON * side, FACES_RHOMBIC_DODECAHEDRON, convexity);
+}
+
+module tetrakis_hexahedron(a = 1, r = 0, convexity = 1)
+{
+	side = r == 0 ? a : r / CIRCUMRADIUS_TETRAKIS_HEXAHEDRON;
+	polyhedron(VERTICES_TETRAKIS_HEXAHEDRON * side, FACES_TETRAKIS_HEXAHEDRON, convexity);
+}
+
+module rhombic_triacontahedron(a = 1, r = 0, convexity = 1)
+{
+	side = r == 0 ? a : r / CIRCUMRADIUS_RHOMBIC_TRIACONTAHEDRON;
+	polyhedron(VERTICES_RHOMBIC_TRIACONTAHEDRON * side, FACES_RHOMBIC_TRIACONTAHEDRON, convexity);
+}
+
+
+////////////////////
+// Johnson Solids //
+////////////////////
+
+module triangular_copula(a = 1, r = 0, convexity = 1)
+{
+	side = r == 0 ? a : r / CIRCUMRADIUS_TRIANGULAR_COPULA;
+	polyhedron(VERTICES_TRIANGULAR_COPULA * side, FACES_TRIANGULAR_COPULA, convexity);
+}
+
+module square_copula(a = 1, r = 0, convexity = 1)
+{
+	side = r == 0 ? a : r / CIRCUMRADIUS_SQUARE_COPULA;
+	polyhedron(VERTICES_SQUARE_COPULA * side, FACES_SQUARE_COPULA, convexity);
+}
+
+module pentagonal_copula(a = 1, r = 0, convexity = 1)
+{
+	side = r == 0 ? a : r / CIRCUMRADIUS_PENTAGONAL_COPULA;
+	polyhedron(VERTICES_PENTAGONAL_COPULA * side, FACES_PENTAGONAL_COPULA, convexity);
+}
+
+module pentagonal_rotunda(a = 1, r = 0, convexity = 1)
+{
+	side = r == 0 ? a : r / CIRCUMRADIUS_PENTAGONAL_ROTUNDA;
+	polyhedron(VERTICES_PENTAGONAL_ROTUNDA * side, FACES_PENTAGONAL_ROTUNDA, convexity);
 }
 
 
@@ -275,7 +369,7 @@ function polyhedron_faces_orientation(id) =
 		faces = polyhedron_faces(id),
 		vertices = polyhedron_vertices(id),
 		normals = [for (f = faces) normal_vector(vertices[f[0]], vertices[f[1]], vertices[f[2]])],
-		normal_xy = [0,0,-1]
+		normal_xy = [0, 0, -1]
 	)
 	[for (n = normals) [-acos(n * normal_xy / norm(n)), cross(n, normal_xy)]];
 
@@ -298,7 +392,7 @@ function polyhedron_faces_inradius(id) =
 
 // Returns the polyhedron vertices as a list of 3D coordinates.
 // The vertex coordinates are normalized such that the edge length (a) equals 1.
-function polyhedron_vertices(id) =
+function polyhedron_vertices(id, n = 5, m = 2) =
 (
 	// Platonic solids.
 	id == "tetrahedron" ?
@@ -332,19 +426,50 @@ function polyhedron_vertices(id) =
 		VERTICES_TRUNCATED_DODECAHEDRON
 	: id == "truncated_icosahedron" ?
 		VERTICES_TRUNCATED_ICOSAHEDRON
+	: id == "rhombicosidodecahedron" ?	
+		VERTICES_RHOMBICOSIDODECAHEDRON
+	: id == "truncated_icosidodecahedron" ?	
+		VERTICES_TRUNCATED_ICOSIDODECAHEDRON
 	: id == "snub_dodecahedron" ?
 		VERTICES_SNUB_DODECAHEDRON
-	// Prism, antiprism.
+	// Regular n-gon polyhedra.
 	: id == "prism" ?
-		VERTICES_PRISM()
+		VERTICES_PRISM(n = n)
 	: id == "antiprism" ?
-		VERTICES_ANTIPRISM()
+		VERTICES_ANTIPRISM(n = n)
+	: id == "trapezohedron" ?
+		VERTICES_TRAPEZOHEDRON(n = n)
+	: id == "star_prism" ?
+		VERTICES_STAR_PRISM(n = n, m = m)
+	: id == "star_dipyramid" ?
+		VERTICES_STAR_DIPYRAMID(n = n, m = m)
+	// Catalan solids.
+	: id == "triakis_tetrahedron" ?
+		VERTICES_TRIAKIS_TETRAHEDRON
+	: id == "rhombic_dodecahedron" ?
+		VERTICES_RHOMBIC_DODECAHEDRON
+	: id == "tetrakis_hexahedron" ?
+		VERTICES_TETRAKIS_HEXAHEDRON
+	: id == "rhombic_triacontahedron" ?	
+		VERTICES_RHOMBIC_TRIACONTAHEDRON
+	// Johnson solids.
+	: id == "triangular_copula" ?
+		VERTICES_TRIANGULAR_COPULA
+	: id == "square_copula" ?
+		VERTICES_SQUARE_COPULA
+	: id == "pentagonal_copula" ?
+		VERTICES_PENTAGONAL_COPULA
+	: id == "pentagonal_rotunda" ?	
+		VERTICES_PENTAGONAL_ROTUNDA
+	// Regular star polyhedra.
+	: id == "small_stellated_dodecahedron" ?
+		VERTICES_SMALL_STELLATED_DODECAHEDRON
 	:
 		undef
 );
 
 // Returns the polyhedron faces as a list of connecting vertices.
-function polyhedron_faces(id) =
+function polyhedron_faces(id, n = 5, m = 2) =
 (
 	// Platonic solids.
 	id == "tetrahedron" ?
@@ -378,22 +503,53 @@ function polyhedron_faces(id) =
 		FACES_TRUNCATED_DODECAHEDRON
 	: id == "truncated_icosahedron" ?
 		FACES_TRUNCATED_ICOSAHEDRON
+	: id == "rhombicosidodecahedron" ?	
+		FACES_RHOMBICOSIDODECAHEDRON
+	: id == "truncated_icosidodecahedron" ?	
+		FACES_TRUNCATED_ICOSIDODECAHEDRON
 	: id == "snub_dodecahedron" ?
 		FACES_SNUB_DODECAHEDRON
-	// Prism, antiprism.
+	// Regular n-gon polyhedra.
 	: id == "prism" ?
-		FACES_PRISM()
+		FACES_PRISM(n = n)
 	: id == "antiprism" ?
-		FACES_ANTIPRISM()
+		FACES_ANTIPRISM(n = n)
+	: id == "trapezohedron" ?
+		FACES_TRAPEZOHEDRON(n = n)
+	: id == "star_prism" ?
+		FACES_STAR_PRISM(n = n, m = m)
+	: id == "star_dipyramid" ?
+		FACES_STAR_DIPYRAMID(n = n, m = m)
+	// Catalan solids.
+	: id == "triakis_tetrahedron" ?
+		FACES_TRIAKIS_TETRAHEDRON
+	: id == "rhombic_dodecahedron" ?
+		FACES_RHOMBIC_DODECAHEDRON
+	: id == "tetrakis_hexahedron" ?
+		FACES_TETRAKIS_HEXAHEDRON
+	: id == "rhombic_triacontahedron" ?	
+		FACES_RHOMBIC_TRIACONTAHEDRON
+	// Johnson solids.
+	: id == "triangular_copula" ?
+		FACES_TRIANGULAR_COPULA
+	: id == "square_copula" ?
+		FACES_SQUARE_COPULA
+	: id == "pentagonal_copula" ?
+		FACES_PENTAGONAL_COPULA
+	: id == "pentagonal_rotunda" ?	
+		FACES_PENTAGONAL_ROTUNDA
+	// Regular star polyhedra.
+	: id == "small_stellated_dodecahedron" ?
+		FACES_SMALL_STELLATED_DODECAHEDRON
 	:
 		undef
 );
 
 // Returns the polyhedron edges as a list of vertex pairs.
-function polyhedron_edges(id) = get_all_edges(polyhedron_faces(id));
+function polyhedron_edges(id, n = 5, m = 2) = get_all_edges(polyhedron_faces(id, n = n, m = m));
 
 // Returns the circumradius factor xi (R = xi * a).
-function circumradius_factor(id) = 
+function circumradius_factor(id, n = 5, m = 2) = 
 (
 	// Platonic solids.
 	id == "tetrahedron" ?
@@ -427,16 +583,52 @@ function circumradius_factor(id) =
 		CIRCUMRADIUS_TRUNCATED_DODECAHEDRON
 	: id == "truncated_icosahedron" ?
 		CIRCUMRADIUS_TRUNCATED_ICOSAHEDRON
+	: id == "rhombicosidodecahedron" ?	
+		CIRCUMRADIUS_RHOMBICOSIDODECAHEDRON
+	: id == "truncated_icosidodecahedron" ?	
+		CIRCUMRADIUS_TRUNCATED_ICOSIDODECAHEDRON
 	: id == "snub_dodecahedron" ?
 		CIRCUMRADIUS_SNUB_DODECAHEDRON
-	// Prism, antiprism.
+	// Regular n-gon polyhedra.
 	: id == "prism" ?
-		CIRCUMRADIUS_PRISM()
+		CIRCUMRADIUS_PRISM(n = n)
 	: id == "antiprism" ?
-		CIRCUMRADIUS_ANTIPRISM()
+		CIRCUMRADIUS_ANTIPRISM(n = n)
+	: id == "trapezohedron" ?
+		CIRCUMRADIUS_TRAPEZOHEDRON(n = n)
+	: id == "star_prism" ?
+		CIRCUMRADIUS_STAR_PRISM(n = n, m = m)
+	: id == "star_dipyramid" ?
+		CIRCUMRADIUS_STAR_DIPYRAMID(n = n, m = m)
+	// Catalan solids.
+	: id == "triakis_tetrahedron" ?
+		CIRCUMRADIUS_TRIAKIS_TETRAHEDRON
+	: id == "rhombic_dodecahedron" ?
+		CIRCUMRADIUS_RHOMBIC_DODECAHEDRON
+	: id == "tetrakis_hexahedron" ?
+		CIRCUMRADIUS_TETRAKIS_HEXAHEDRON
+	: id == "rhombic_triacontahedron" ?	
+		CIRCUMRADIUS_RHOMBIC_TRIACONTAHEDRON
+	// Johnson solids.
+	: id == "triangular_copula" ?
+		CIRCUMRADIUS_TRIANGULAR_COPULA
+	: id == "square_copula" ?
+		CIRCUMRADIUS_SQUARE_COPULA
+	: id == "pentagonal_copula" ?
+		CIRCUMRADIUS_PENTAGONAL_COPULA
+	: id == "pentagonal_rotunda" ?	
+		CIRCUMRADIUS_PENTAGONAL_ROTUNDA
+	// Regular star polyhedra.
+	: id == "small_stellated_dodecahedron" ?
+		CIRCUMRADIUS_SMALL_STELLATED_DODECAHEDRON
 	:
 		undef
 );
+
+
+///////////////////////////
+// Data: Platonic Solids //
+///////////////////////////
 
 // Source: https://en.wikipedia.org/wiki/Tetrahedron
 VERTICES_TETRAHEDRON = [
@@ -538,6 +730,11 @@ FACES_ICOSAHEDRON = [
 	[10, 0, 6], [5, 9, 4], [4, 8, 5], [8, 1, 5], [10, 6, 7]
 ];
 CIRCUMRADIUS_ICOSAHEDRON = PHI * sin(180 / 5);
+
+
+//////////////////////////////
+// Data: Archimedean Solids //
+//////////////////////////////
 
 // Source: https://en.wikipedia.org/wiki/Truncated_tetrahedron
 VERTICES_TRUNCATED_TETRAHEDRON = [
@@ -772,44 +969,39 @@ CIRCUMRADIUS_TRUNCATED_CUBOCTAHEDRON = sqrt(13 + 6 * sqrt(2)) / 2;
 
 // Source: https://en.wikipedia.org/wiki/Snub_cube
 // TODO: mirror image
-//	t = (1 + pow(19 - 3 * sqrt(33), 1/3) + pow(19 + 3 * sqrt(33), 1/3)) / 3;
-//	beta = pow(26 + 6 * sqrt(33), 1/3);
-//	alpha = sqrt(4 / 3 - 16 / (3 * beta) + 2 * beta / 3);
-//	gamma = sqrt((3 - t) / (8 - 4 * t));
-//	side = r == 0 ? a / alpha : r / alpha / gamma;
 CONSTANT_SNUB_CUBE = let (beta = pow(26 + 6 * sqrt(33), 1/3)) sqrt(4 / 3 - 16 / (3 * beta) + 2 * beta / 3);
 VERTICES_SNUB_CUBE = [ // for the even mirror image.
 	// even permutations
-	[+1, +1/TRIBONACCI, -TRIBONACCI],  //1
-	[+1, -1/TRIBONACCI, +TRIBONACCI],  //2
-	[-1, +1/TRIBONACCI, +TRIBONACCI],  //4
-	[-1, -1/TRIBONACCI, -TRIBONACCI],  //7
+	[+1, +1/TRIBONACCI, -TRIBONACCI],  //0
+	[+1, -1/TRIBONACCI, +TRIBONACCI],  //1
+	[-1, +1/TRIBONACCI, +TRIBONACCI],  //2
+	[-1, -1/TRIBONACCI, -TRIBONACCI],  //3
 
-	[-TRIBONACCI, +1, +1/TRIBONACCI],  //1
-	[+TRIBONACCI, -1, +1/TRIBONACCI],  //1
-	[+TRIBONACCI, +1, -1/TRIBONACCI],  //1
-	[-TRIBONACCI, -1, -1/TRIBONACCI],  //1
+	[-TRIBONACCI, +1, +1/TRIBONACCI],  //4
+	[+TRIBONACCI, -1, +1/TRIBONACCI],  //5
+	[+TRIBONACCI, +1, -1/TRIBONACCI],  //6
+	[-TRIBONACCI, -1, -1/TRIBONACCI],  //7
 
-	[+1/TRIBONACCI, -TRIBONACCI, +1],  //1
-	[-1/TRIBONACCI, +TRIBONACCI, +1],  //1
-	[+1/TRIBONACCI, +TRIBONACCI, -1],  //1
-	[-1/TRIBONACCI, -TRIBONACCI, -1],  //1
+	[+1/TRIBONACCI, -TRIBONACCI, +1],  //8
+	[-1/TRIBONACCI, +TRIBONACCI, +1],  //9
+	[+1/TRIBONACCI, +TRIBONACCI, -1],  //10
+	[-1/TRIBONACCI, -TRIBONACCI, -1],  //11
 	
 	// odd permutations
-	[+TRIBONACCI, +1/TRIBONACCI, +1],  //0
-	[+TRIBONACCI, -1/TRIBONACCI, -1],  //3
-	[-TRIBONACCI, +1/TRIBONACCI, -1],  //5
-	[-TRIBONACCI, -1/TRIBONACCI, +1],  //6
+	[+TRIBONACCI, +1/TRIBONACCI, +1],  //12
+	[+TRIBONACCI, -1/TRIBONACCI, -1],  //13
+	[-TRIBONACCI, +1/TRIBONACCI, -1],  //14
+	[-TRIBONACCI, -1/TRIBONACCI, +1],  //15
 	
-	[+1/TRIBONACCI, +1, +TRIBONACCI],  //0
-	[-1/TRIBONACCI, +1, -TRIBONACCI],  //0
-	[+1/TRIBONACCI, -1, -TRIBONACCI],  //0
-	[-1/TRIBONACCI, -1, +TRIBONACCI],  //0
+	[+1/TRIBONACCI, +1, +TRIBONACCI],  //16
+	[-1/TRIBONACCI, +1, -TRIBONACCI],  //17
+	[+1/TRIBONACCI, -1, -TRIBONACCI],  //18
+	[-1/TRIBONACCI, -1, +TRIBONACCI],  //19
 	
-	[+1, +TRIBONACCI, +1/TRIBONACCI],  //0
-	[+1, -TRIBONACCI, -1/TRIBONACCI],  //0
-	[-1, -TRIBONACCI, +1/TRIBONACCI],  //0
-	[-1, +TRIBONACCI, -1/TRIBONACCI]  //0
+	[+1, +TRIBONACCI, +1/TRIBONACCI],  //20
+	[+1, -TRIBONACCI, -1/TRIBONACCI],  //21
+	[-1, -TRIBONACCI, +1/TRIBONACCI],  //22
+	[-1, +TRIBONACCI, -1/TRIBONACCI]   //23
 ] / CONSTANT_SNUB_CUBE;
 FACES_SNUB_CUBE = [
 	[2, 16, 1, 19], [0, 17, 3, 18], [23, 10, 20, 9], [22, 8, 21, 11], [12, 6, 13, 5], [4, 15, 7, 14],
@@ -819,7 +1011,6 @@ FACES_SNUB_CUBE = [
 CIRCUMRADIUS_SNUB_CUBE = sqrt((3 - TRIBONACCI) / (8 - 4 * TRIBONACCI));
 
 // Source: https://en.wikipedia.org/wiki/Icosidodecahedron
-//	side = r == 0 ? a / 2 : r / (2 * PHI);
 VERTICES_ICOSIDODECAHEDRON = [
 	[0, 0, +2 * PHI],  //0
 	[0, 0, -2 * PHI],  //1
@@ -872,73 +1063,73 @@ CIRCUMRADIUS_ICOSIDODECAHEDRON = PHI;
 // Source: https://en.wikipedia.org/wiki/Truncated_dodecahedron
 VERTICES_TRUNCATED_DODECAHEDRON = [
 	[0, +1/PHI, +(2+PHI)],  //0
-	[0, +1/PHI, -(2+PHI)],  //0
-	[0, -1/PHI, +(2+PHI)],  //0
-	[0, -1/PHI, -(2+PHI)],  //0
+	[0, +1/PHI, -(2+PHI)],  //1
+	[0, -1/PHI, +(2+PHI)],  //2
+	[0, -1/PHI, -(2+PHI)],  //3
 	
-	[+(2+PHI), 0, +1/PHI],  //0
-	[+(2+PHI), 0, -1/PHI],  //0
-	[-(2+PHI), 0, +1/PHI],  //0
-	[-(2+PHI), 0, -1/PHI],  //0
+	[+(2+PHI), 0, +1/PHI],  //4
+	[+(2+PHI), 0, -1/PHI],  //5
+	[-(2+PHI), 0, +1/PHI],  //6
+	[-(2+PHI), 0, -1/PHI],  //7
 	
-	[+1/PHI, +(2+PHI), 0],  //0	
-	[+1/PHI, -(2+PHI), 0],  //0	
-	[-1/PHI, +(2+PHI), 0],  //0	
-	[-1/PHI, -(2+PHI), 0],  //0
+	[+1/PHI, +(2+PHI), 0],  //8	
+	[+1/PHI, -(2+PHI), 0],  //9	
+	[-1/PHI, +(2+PHI), 0],  //10	
+	[-1/PHI, -(2+PHI), 0],  //11
 	
-	[+1/PHI, +PHI, +2*PHI],  //0
-	[+1/PHI, +PHI, -2*PHI],  //0
-	[+1/PHI, -PHI, +2*PHI],  //0
-	[+1/PHI, -PHI, -2*PHI],  //0
-	[-1/PHI, +PHI, +2*PHI],  //0
-	[-1/PHI, +PHI, -2*PHI],  //0
-	[-1/PHI, -PHI, +2*PHI],  //0
-	[-1/PHI, -PHI, -2*PHI],  //0
+	[+1/PHI, +PHI, +2*PHI],  //12
+	[+1/PHI, +PHI, -2*PHI],  //13
+	[+1/PHI, -PHI, +2*PHI],  //14
+	[+1/PHI, -PHI, -2*PHI],  //15
+	[-1/PHI, +PHI, +2*PHI],  //16
+	[-1/PHI, +PHI, -2*PHI],  //17
+	[-1/PHI, -PHI, +2*PHI],  //18
+	[-1/PHI, -PHI, -2*PHI],  //19
 	
-	[+2*PHI, +1/PHI, +PHI],  //0
-	[+2*PHI, +1/PHI, -PHI],  //0
-	[+2*PHI, -1/PHI, +PHI],  //0
-	[+2*PHI, -1/PHI, -PHI],  //0
-	[-2*PHI, +1/PHI, +PHI],  //0
-	[-2*PHI, +1/PHI, -PHI],  //0
-	[-2*PHI, -1/PHI, +PHI],  //0
-	[-2*PHI, -1/PHI, -PHI],  //0
+	[+2*PHI, +1/PHI, +PHI],  //20
+	[+2*PHI, +1/PHI, -PHI],  //21
+	[+2*PHI, -1/PHI, +PHI],  //22
+	[+2*PHI, -1/PHI, -PHI],  //23
+	[-2*PHI, +1/PHI, +PHI],  //24
+	[-2*PHI, +1/PHI, -PHI],  //25
+	[-2*PHI, -1/PHI, +PHI],  //26
+	[-2*PHI, -1/PHI, -PHI],  //27
 	
-	[+PHI, +2*PHI, +1/PHI],  //0
-	[+PHI, +2*PHI, -1/PHI],  //0
-	[+PHI, -2*PHI, +1/PHI],  //0
-	[+PHI, -2*PHI, -1/PHI],  //0
-	[-PHI, +2*PHI, +1/PHI],  //0
-	[-PHI, +2*PHI, -1/PHI],  //0
-	[-PHI, -2*PHI, +1/PHI],  //0
-	[-PHI, -2*PHI, -1/PHI],  //0
+	[+PHI, +2*PHI, +1/PHI],  //28
+	[+PHI, +2*PHI, -1/PHI],  //29
+	[+PHI, -2*PHI, +1/PHI],  //30
+	[+PHI, -2*PHI, -1/PHI],  //31
+	[-PHI, +2*PHI, +1/PHI],  //32
+	[-PHI, +2*PHI, -1/PHI],  //33
+	[-PHI, -2*PHI, +1/PHI],  //34
+	[-PHI, -2*PHI, -1/PHI],  //35
 	
-	[+PHI, +2, +(PHI+1)], //0
-	[+PHI, +2, -(PHI+1)], //0
-	[+PHI, -2, +(PHI+1)], //0
-	[+PHI, -2, -(PHI+1)], //0
-	[-PHI, +2, +(PHI+1)], //0
-	[-PHI, +2, -(PHI+1)], //0
-	[-PHI, -2, +(PHI+1)], //0
-	[-PHI, -2, -(PHI+1)], //0
+	[+PHI, +2, +(PHI+1)], //36
+	[+PHI, +2, -(PHI+1)], //37
+	[+PHI, -2, +(PHI+1)], //38
+	[+PHI, -2, -(PHI+1)], //39
+	[-PHI, +2, +(PHI+1)], //40
+	[-PHI, +2, -(PHI+1)], //41
+	[-PHI, -2, +(PHI+1)], //42
+	[-PHI, -2, -(PHI+1)], //43
 	
-	[+(PHI+1), +PHI, +2], //0
-	[+(PHI+1), +PHI, -2], //0
-	[+(PHI+1), -PHI, +2], //0
-	[+(PHI+1), -PHI, -2], //0
-	[-(PHI+1), +PHI, +2], //0
-	[-(PHI+1), +PHI, -2], //0
-	[-(PHI+1), -PHI, +2], //0
-	[-(PHI+1), -PHI, -2], //0
+	[+(PHI+1), +PHI, +2], //44
+	[+(PHI+1), +PHI, -2], //45
+	[+(PHI+1), -PHI, +2], //46
+	[+(PHI+1), -PHI, -2], //47
+	[-(PHI+1), +PHI, +2], //48
+	[-(PHI+1), +PHI, -2], //49
+	[-(PHI+1), -PHI, +2], //50
+	[-(PHI+1), -PHI, -2], //51
 	
-	[+2, +(PHI+1), +PHI], //0
-	[+2, +(PHI+1), -PHI], //0
-	[+2, -(PHI+1), +PHI], //0
-	[+2, -(PHI+1), -PHI], //0
-	[-2, +(PHI+1), +PHI], //0
-	[-2, +(PHI+1), -PHI], //0
-	[-2, -(PHI+1), +PHI], //0
-	[-2, -(PHI+1), -PHI]  //0
+	[+2, +(PHI+1), +PHI], //52
+	[+2, +(PHI+1), -PHI], //53
+	[+2, -(PHI+1), +PHI], //54
+	[+2, -(PHI+1), -PHI], //55
+	[-2, +(PHI+1), +PHI], //56
+	[-2, +(PHI+1), -PHI], //57
+	[-2, -(PHI+1), +PHI], //58
+	[-2, -(PHI+1), -PHI]  //59
 ] / (2 * PHI - 2);
 FACES_TRUNCATED_DODECAHEDRON = [
 	[2, 0, 12, 36, 44, 20, 22, 46, 38, 14], [2, 18, 42, 50, 26, 24, 48, 40, 16, 0],
@@ -1027,28 +1218,234 @@ FACES_TRUNCATED_ICOSAHEDRON = [
 CIRCUMRADIUS_TRUNCATED_ICOSAHEDRON = sqrt(9 * PHI + 10) / 2;
 
 // Source: https://en.wikipedia.org/wiki/Rhombicosidodecahedron
-// TODO: add these properties.
 VERTICES_RHOMBICOSIDODECAHEDRON =
 [
-
+	[+1/2, +1/2, +pow(PHI,3)/2],  //0
+	[+1/2, +1/2, -pow(PHI,3)/2],  //1
+	[+1/2, -1/2, +pow(PHI,3)/2],  //2
+	[+1/2, -1/2, -pow(PHI,3)/2],  //3
+	[-1/2, +1/2, +pow(PHI,3)/2],  //4
+	[-1/2, +1/2, -pow(PHI,3)/2],  //5
+	[-1/2, -1/2, +pow(PHI,3)/2],  //6
+	[-1/2, -1/2, -pow(PHI,3)/2],  //7
+	
+	[+1/2, +pow(PHI,3)/2, +1/2],  //8
+	[+1/2, +pow(PHI,3)/2, -1/2],  //9
+	[+1/2, -pow(PHI,3)/2, +1/2],  //10
+	[+1/2, -pow(PHI,3)/2, -1/2],  //11
+	[-1/2, +pow(PHI,3)/2, +1/2],  //12
+	[-1/2, +pow(PHI,3)/2, -1/2],  //13
+	[-1/2, -pow(PHI,3)/2, +1/2],  //14
+	[-1/2, -pow(PHI,3)/2, -1/2],  //15
+	
+	[+pow(PHI,3)/2, +1/2, +1/2],  //16
+	[+pow(PHI,3)/2, +1/2, -1/2],  //17
+	[+pow(PHI,3)/2, -1/2, +1/2],  //18
+	[+pow(PHI,3)/2, -1/2, -1/2],  //19
+	[-pow(PHI,3)/2, +1/2, +1/2],  //20
+	[-pow(PHI,3)/2, +1/2, -1/2],  //21
+	[-pow(PHI,3)/2, -1/2, +1/2],  //22
+	[-pow(PHI,3)/2, -1/2, -1/2],  //23
+	
+	[+pow(PHI,2)/2, +PHI/2, +PHI],  //24
+	[+pow(PHI,2)/2, +PHI/2, -PHI],  //25
+	[+pow(PHI,2)/2, -PHI/2, +PHI],  //26
+	[+pow(PHI,2)/2, -PHI/2, -PHI],  //27
+	[-pow(PHI,2)/2, +PHI/2, +PHI],  //28
+	[-pow(PHI,2)/2, +PHI/2, -PHI],  //29
+	[-pow(PHI,2)/2, -PHI/2, +PHI],  //30
+	[-pow(PHI,2)/2, -PHI/2, -PHI],  //31
+	
+	[+PHI, +pow(PHI,2)/2, +PHI/2],  //32
+	[+PHI, +pow(PHI,2)/2, -PHI/2],  //33
+	[+PHI, -pow(PHI,2)/2, +PHI/2],  //34
+	[+PHI, -pow(PHI,2)/2, -PHI/2],  //35
+	[-PHI, +pow(PHI,2)/2, +PHI/2],  //36
+	[-PHI, +pow(PHI,2)/2, -PHI/2],  //37
+	[-PHI, -pow(PHI,2)/2, +PHI/2],  //38
+	[-PHI, -pow(PHI,2)/2, -PHI/2],  //39
+	
+	[+PHI/2, +PHI, +pow(PHI,2)/2],  //40
+	[+PHI/2, +PHI, -pow(PHI,2)/2],  //41
+	[+PHI/2, -PHI, +pow(PHI,2)/2],  //42
+	[+PHI/2, -PHI, -pow(PHI,2)/2],  //43
+	[-PHI/2, +PHI, +pow(PHI,2)/2],  //44
+	[-PHI/2, +PHI, -pow(PHI,2)/2],  //45
+	[-PHI/2, -PHI, +pow(PHI,2)/2],  //46
+	[-PHI/2, -PHI, -pow(PHI,2)/2],  //47
+	
+	[+(1+PHI/2), 0, +pow(PHI,2)/2],  //48
+	[+(1+PHI/2), 0, -pow(PHI,2)/2],  //49
+	[-(1+PHI/2), 0, +pow(PHI,2)/2],  //50
+	[-(1+PHI/2), 0, -pow(PHI,2)/2],  //51
+	
+	[+pow(PHI,2)/2, +(1+PHI/2), 0],  //52
+	[+pow(PHI,2)/2, -(1+PHI/2), 0],  //53
+	[-pow(PHI,2)/2, +(1+PHI/2), 0],  //54
+	[-pow(PHI,2)/2, -(1+PHI/2), 0],  //55
+	
+	[0, +pow(PHI,2)/2, +(1+PHI/2)],  //56
+	[0, +pow(PHI,2)/2, -(1+PHI/2)],  //57
+	[0, -pow(PHI,2)/2, +(1+PHI/2)],  //58
+	[0, -pow(PHI,2)/2, -(1+PHI/2)],  //59
 ];
 FACES_RHOMBICOSIDODECAHEDRON = 
 [
-
+	[50, 28, 4, 6, 30], [37, 54, 36, 20, 21], [22, 38, 55, 39, 23], [0, 24, 48, 26, 2], [44, 12, 8, 40, 56], [46, 58, 42, 10, 14], [53, 34, 18, 19, 35], [32, 52, 33, 17, 16], [9, 13, 45, 57, 41], [51, 31, 7, 5, 29], [15, 11, 43, 59, 47], 
+	
+	[0, 2, 6, 4], [2, 26, 42, 58], [6, 58, 46, 30], [38, 46, 14, 55], [50, 30, 38, 22], [49, 25, 1, 3, 27], [20, 22, 23, 21], [28, 50, 20, 36], [56, 4, 28, 44], [44, 36, 54, 12], [0, 56, 40, 24], [40, 8, 52, 32], [48, 24, 32, 16], [18, 16, 17, 19], [26, 48, 18, 34], [42, 34, 53, 10], [14, 10, 11, 15], [11, 53, 35, 43], [55, 15, 47, 39], [23, 39, 31, 51], [54, 37, 45, 13], [37, 21, 51, 29], [8, 12, 13, 9], [52, 9, 41, 33], [17, 33, 25, 49], [35, 19, 49, 27], [43, 27, 3, 59], [47, 59, 7, 31], [45, 29, 5, 57], [5, 7, 3, 1], [1, 25, 41, 57], 
+	
+	[0, 4, 56], [6, 2, 58], [30, 46, 38], [26, 34, 42], [10, 53, 11], [48, 16, 18], [24, 40, 32], [52, 8, 9], [12, 54, 13], [44, 28, 36], [50, 22, 20], [21, 23, 51], [55, 14, 15], [35, 27, 43], [19, 17, 49], [33, 41, 25], [57, 5, 1], [3, 7, 59], [47, 31, 39], [45, 37, 29]
 ];
-CIRCUMRADIUS_RHOMBICOSIDODECAHEDRON = 1;
+CIRCUMRADIUS_RHOMBICOSIDODECAHEDRON = sqrt(8 * PHI + 7) / 2;
 
 // Source: https://en.wikipedia.org/wiki/Truncated_icosidodecahedron
-// TODO: add these properties.
 VERTICES_TRUNCATED_ICOSIDODECAHEDRON =
 [
-
+	[+1/((2*PHI-2)*PHI), +1/((2*PHI-2)*PHI), +(3+PHI)/(2*PHI-2)],
+	[+1/((2*PHI-2)*PHI), +1/((2*PHI-2)*PHI), -(3+PHI)/(2*PHI-2)],
+	[+1/((2*PHI-2)*PHI), -1/((2*PHI-2)*PHI), +(3+PHI)/(2*PHI-2)],
+	[+1/((2*PHI-2)*PHI), -1/((2*PHI-2)*PHI), -(3+PHI)/(2*PHI-2)],
+	[-1/((2*PHI-2)*PHI), +1/((2*PHI-2)*PHI), +(3+PHI)/(2*PHI-2)],
+	[-1/((2*PHI-2)*PHI), +1/((2*PHI-2)*PHI), -(3+PHI)/(2*PHI-2)],
+	[-1/((2*PHI-2)*PHI), -1/((2*PHI-2)*PHI), +(3+PHI)/(2*PHI-2)],
+	[-1/((2*PHI-2)*PHI), -1/((2*PHI-2)*PHI), -(3+PHI)/(2*PHI-2)],
+	
+	[+(3+PHI)/(2*PHI-2), +1/((2*PHI-2)*PHI), +1/((2*PHI-2)*PHI)],
+	[+(3+PHI)/(2*PHI-2), +1/((2*PHI-2)*PHI), -1/((2*PHI-2)*PHI)],
+	[+(3+PHI)/(2*PHI-2), -1/((2*PHI-2)*PHI), +1/((2*PHI-2)*PHI)],
+	[+(3+PHI)/(2*PHI-2), -1/((2*PHI-2)*PHI), -1/((2*PHI-2)*PHI)],
+	[-(3+PHI)/(2*PHI-2), +1/((2*PHI-2)*PHI), +1/((2*PHI-2)*PHI)],
+	[-(3+PHI)/(2*PHI-2), +1/((2*PHI-2)*PHI), -1/((2*PHI-2)*PHI)],
+	[-(3+PHI)/(2*PHI-2), -1/((2*PHI-2)*PHI), +1/((2*PHI-2)*PHI)],
+	[-(3+PHI)/(2*PHI-2), -1/((2*PHI-2)*PHI), -1/((2*PHI-2)*PHI)],
+	
+	[+1/((2*PHI-2)*PHI), +(3+PHI)/(2*PHI-2), +1/((2*PHI-2)*PHI)],
+	[+1/((2*PHI-2)*PHI), +(3+PHI)/(2*PHI-2), -1/((2*PHI-2)*PHI)],
+	[+1/((2*PHI-2)*PHI), -(3+PHI)/(2*PHI-2), +1/((2*PHI-2)*PHI)],
+	[+1/((2*PHI-2)*PHI), -(3+PHI)/(2*PHI-2), -1/((2*PHI-2)*PHI)],
+	[-1/((2*PHI-2)*PHI), +(3+PHI)/(2*PHI-2), +1/((2*PHI-2)*PHI)],
+	[-1/((2*PHI-2)*PHI), +(3+PHI)/(2*PHI-2), -1/((2*PHI-2)*PHI)],
+	[-1/((2*PHI-2)*PHI), -(3+PHI)/(2*PHI-2), +1/((2*PHI-2)*PHI)],
+	[-1/((2*PHI-2)*PHI), -(3+PHI)/(2*PHI-2), -1/((2*PHI-2)*PHI)],
+	
+	[+1/((PHI-1)*PHI), +PHI/(2*PHI-2), +(1+2*PHI)/(2*PHI-2)],
+	[+1/((PHI-1)*PHI), +PHI/(2*PHI-2), -(1+2*PHI)/(2*PHI-2)],
+	[+1/((PHI-1)*PHI), -PHI/(2*PHI-2), +(1+2*PHI)/(2*PHI-2)],
+	[+1/((PHI-1)*PHI), -PHI/(2*PHI-2), -(1+2*PHI)/(2*PHI-2)],
+	[-1/((PHI-1)*PHI), +PHI/(2*PHI-2), +(1+2*PHI)/(2*PHI-2)],
+	[-1/((PHI-1)*PHI), +PHI/(2*PHI-2), -(1+2*PHI)/(2*PHI-2)],
+	[-1/((PHI-1)*PHI), -PHI/(2*PHI-2), +(1+2*PHI)/(2*PHI-2)],
+	[-1/((PHI-1)*PHI), -PHI/(2*PHI-2), -(1+2*PHI)/(2*PHI-2)],
+	
+	[+(1+2*PHI)/(2*PHI-2), +1/((PHI-1)*PHI), +PHI/(2*PHI-2)],
+	[+(1+2*PHI)/(2*PHI-2), +1/((PHI-1)*PHI), -PHI/(2*PHI-2)],
+	[+(1+2*PHI)/(2*PHI-2), -1/((PHI-1)*PHI), +PHI/(2*PHI-2)],
+	[+(1+2*PHI)/(2*PHI-2), -1/((PHI-1)*PHI), -PHI/(2*PHI-2)],
+	[-(1+2*PHI)/(2*PHI-2), +1/((PHI-1)*PHI), +PHI/(2*PHI-2)],
+	[-(1+2*PHI)/(2*PHI-2), +1/((PHI-1)*PHI), -PHI/(2*PHI-2)],
+	[-(1+2*PHI)/(2*PHI-2), -1/((PHI-1)*PHI), +PHI/(2*PHI-2)],
+	[-(1+2*PHI)/(2*PHI-2), -1/((PHI-1)*PHI), -PHI/(2*PHI-2)],
+	
+	[+PHI/(2*PHI-2), +(1+2*PHI)/(2*PHI-2), +1/((PHI-1)*PHI)],
+	[+PHI/(2*PHI-2), +(1+2*PHI)/(2*PHI-2), -1/((PHI-1)*PHI)],
+	[+PHI/(2*PHI-2), -(1+2*PHI)/(2*PHI-2), +1/((PHI-1)*PHI)],
+	[+PHI/(2*PHI-2), -(1+2*PHI)/(2*PHI-2), -1/((PHI-1)*PHI)],
+	[-PHI/(2*PHI-2), +(1+2*PHI)/(2*PHI-2), +1/((PHI-1)*PHI)],
+	[-PHI/(2*PHI-2), +(1+2*PHI)/(2*PHI-2), -1/((PHI-1)*PHI)],
+	[-PHI/(2*PHI-2), -(1+2*PHI)/(2*PHI-2), +1/((PHI-1)*PHI)],
+	[-PHI/(2*PHI-2), -(1+2*PHI)/(2*PHI-2), -1/((PHI-1)*PHI)],
+	
+	[+1/((2*PHI-2)*PHI), +PHI*PHI/(2*PHI-2), +(3*PHI-1)/(2*PHI-2)],
+	[+1/((2*PHI-2)*PHI), +PHI*PHI/(2*PHI-2), -(3*PHI-1)/(2*PHI-2)],
+	[+1/((2*PHI-2)*PHI), -PHI*PHI/(2*PHI-2), +(3*PHI-1)/(2*PHI-2)],
+	[+1/((2*PHI-2)*PHI), -PHI*PHI/(2*PHI-2), -(3*PHI-1)/(2*PHI-2)],
+	[-1/((2*PHI-2)*PHI), +PHI*PHI/(2*PHI-2), +(3*PHI-1)/(2*PHI-2)],
+	[-1/((2*PHI-2)*PHI), +PHI*PHI/(2*PHI-2), -(3*PHI-1)/(2*PHI-2)],
+	[-1/((2*PHI-2)*PHI), -PHI*PHI/(2*PHI-2), +(3*PHI-1)/(2*PHI-2)],
+	[-1/((2*PHI-2)*PHI), -PHI*PHI/(2*PHI-2), -(3*PHI-1)/(2*PHI-2)],
+	
+	[+(3*PHI-1)/(2*PHI-2), +1/((2*PHI-2)*PHI), +PHI*PHI/(2*PHI-2)],
+	[+(3*PHI-1)/(2*PHI-2), +1/((2*PHI-2)*PHI), -PHI*PHI/(2*PHI-2)],
+	[+(3*PHI-1)/(2*PHI-2), -1/((2*PHI-2)*PHI), +PHI*PHI/(2*PHI-2)],
+	[+(3*PHI-1)/(2*PHI-2), -1/((2*PHI-2)*PHI), -PHI*PHI/(2*PHI-2)],
+	[-(3*PHI-1)/(2*PHI-2), +1/((2*PHI-2)*PHI), +PHI*PHI/(2*PHI-2)],
+	[-(3*PHI-1)/(2*PHI-2), +1/((2*PHI-2)*PHI), -PHI*PHI/(2*PHI-2)],
+	[-(3*PHI-1)/(2*PHI-2), -1/((2*PHI-2)*PHI), +PHI*PHI/(2*PHI-2)],
+	[-(3*PHI-1)/(2*PHI-2), -1/((2*PHI-2)*PHI), -PHI*PHI/(2*PHI-2)],
+	
+	[+PHI*PHI/(2*PHI-2), +(3*PHI-1)/(2*PHI-2), +1/((2*PHI-2)*PHI)],
+	[+PHI*PHI/(2*PHI-2), +(3*PHI-1)/(2*PHI-2), -1/((2*PHI-2)*PHI)],
+	[+PHI*PHI/(2*PHI-2), -(3*PHI-1)/(2*PHI-2), +1/((2*PHI-2)*PHI)],
+	[+PHI*PHI/(2*PHI-2), -(3*PHI-1)/(2*PHI-2), -1/((2*PHI-2)*PHI)],
+	[-PHI*PHI/(2*PHI-2), +(3*PHI-1)/(2*PHI-2), +1/((2*PHI-2)*PHI)],
+	[-PHI*PHI/(2*PHI-2), +(3*PHI-1)/(2*PHI-2), -1/((2*PHI-2)*PHI)],
+	[-PHI*PHI/(2*PHI-2), -(3*PHI-1)/(2*PHI-2), +1/((2*PHI-2)*PHI)],
+	[-PHI*PHI/(2*PHI-2), -(3*PHI-1)/(2*PHI-2), -1/((2*PHI-2)*PHI)],
+	
+	[+(2*PHI-1)/(2*PHI-2), +1/(PHI-1), +(2+PHI)/(2*PHI-2)],
+	[+(2*PHI-1)/(2*PHI-2), +1/(PHI-1), -(2+PHI)/(2*PHI-2)],
+	[+(2*PHI-1)/(2*PHI-2), -1/(PHI-1), +(2+PHI)/(2*PHI-2)],
+	[+(2*PHI-1)/(2*PHI-2), -1/(PHI-1), -(2+PHI)/(2*PHI-2)],
+	[-(2*PHI-1)/(2*PHI-2), +1/(PHI-1), +(2+PHI)/(2*PHI-2)],
+	[-(2*PHI-1)/(2*PHI-2), +1/(PHI-1), -(2+PHI)/(2*PHI-2)],
+	[-(2*PHI-1)/(2*PHI-2), -1/(PHI-1), +(2+PHI)/(2*PHI-2)],
+	[-(2*PHI-1)/(2*PHI-2), -1/(PHI-1), -(2+PHI)/(2*PHI-2)],
+	
+	[+(2+PHI)/(2*PHI-2), +(2*PHI-1)/(2*PHI-2), +1/(PHI-1)],
+	[+(2+PHI)/(2*PHI-2), +(2*PHI-1)/(2*PHI-2), -1/(PHI-1)],
+	[+(2+PHI)/(2*PHI-2), -(2*PHI-1)/(2*PHI-2), +1/(PHI-1)],
+	[+(2+PHI)/(2*PHI-2), -(2*PHI-1)/(2*PHI-2), -1/(PHI-1)],
+	[-(2+PHI)/(2*PHI-2), +(2*PHI-1)/(2*PHI-2), +1/(PHI-1)],
+	[-(2+PHI)/(2*PHI-2), +(2*PHI-1)/(2*PHI-2), -1/(PHI-1)],
+	[-(2+PHI)/(2*PHI-2), -(2*PHI-1)/(2*PHI-2), +1/(PHI-1)],
+	[-(2+PHI)/(2*PHI-2), -(2*PHI-1)/(2*PHI-2), -1/(PHI-1)],
+	
+	[+1/(PHI-1), +(2+PHI)/(2*PHI-2), +(2*PHI-1)/(2*PHI-2)],
+	[+1/(PHI-1), +(2+PHI)/(2*PHI-2), -(2*PHI-1)/(2*PHI-2)],
+	[+1/(PHI-1), -(2+PHI)/(2*PHI-2), +(2*PHI-1)/(2*PHI-2)],
+	[+1/(PHI-1), -(2+PHI)/(2*PHI-2), -(2*PHI-1)/(2*PHI-2)],
+	[-1/(PHI-1), +(2+PHI)/(2*PHI-2), +(2*PHI-1)/(2*PHI-2)],
+	[-1/(PHI-1), +(2+PHI)/(2*PHI-2), -(2*PHI-1)/(2*PHI-2)],
+	[-1/(PHI-1), -(2+PHI)/(2*PHI-2), +(2*PHI-1)/(2*PHI-2)],
+	[-1/(PHI-1), -(2+PHI)/(2*PHI-2), -(2*PHI-1)/(2*PHI-2)],
+	
+	[+PHI/(2*PHI-2), +3/(2*PHI-2), +PHI/(PHI-1)],
+	[+PHI/(2*PHI-2), +3/(2*PHI-2), -PHI/(PHI-1)],
+	[+PHI/(2*PHI-2), -3/(2*PHI-2), +PHI/(PHI-1)],
+	[+PHI/(2*PHI-2), -3/(2*PHI-2), -PHI/(PHI-1)],
+	[-PHI/(2*PHI-2), +3/(2*PHI-2), +PHI/(PHI-1)],
+	[-PHI/(2*PHI-2), +3/(2*PHI-2), -PHI/(PHI-1)],
+	[-PHI/(2*PHI-2), -3/(2*PHI-2), +PHI/(PHI-1)],
+	[-PHI/(2*PHI-2), -3/(2*PHI-2), -PHI/(PHI-1)],
+	
+	[+PHI/(PHI-1), +PHI/(2*PHI-2), +3/(2*PHI-2)],
+	[+PHI/(PHI-1), +PHI/(2*PHI-2), -3/(2*PHI-2)],
+	[+PHI/(PHI-1), -PHI/(2*PHI-2), +3/(2*PHI-2)],
+	[+PHI/(PHI-1), -PHI/(2*PHI-2), -3/(2*PHI-2)],
+	[-PHI/(PHI-1), +PHI/(2*PHI-2), +3/(2*PHI-2)],
+	[-PHI/(PHI-1), +PHI/(2*PHI-2), -3/(2*PHI-2)],
+	[-PHI/(PHI-1), -PHI/(2*PHI-2), +3/(2*PHI-2)],
+	[-PHI/(PHI-1), -PHI/(2*PHI-2), -3/(2*PHI-2)],
+	
+	[+3/(2*PHI-2), +PHI/(PHI-1), +PHI/(2*PHI-2)],
+	[+3/(2*PHI-2), +PHI/(PHI-1), -PHI/(2*PHI-2)],
+	[+3/(2*PHI-2), -PHI/(PHI-1), +PHI/(2*PHI-2)],
+	[+3/(2*PHI-2), -PHI/(PHI-1), -PHI/(2*PHI-2)],
+	[-3/(2*PHI-2), +PHI/(PHI-1), +PHI/(2*PHI-2)],
+	[-3/(2*PHI-2), +PHI/(PHI-1), -PHI/(2*PHI-2)],
+	[-3/(2*PHI-2), -PHI/(PHI-1), +PHI/(2*PHI-2)],
+	[-3/(2*PHI-2), -PHI/(PHI-1), -PHI/(2*PHI-2)]
 ];
 FACES_TRUNCATED_ICOSIDODECAHEDRON = 
 [
-
+	[2, 0, 24, 72, 104, 56, 58, 106, 74, 26], [4, 6, 30, 78, 110, 62, 60, 108, 76, 28], [48, 52, 100, 92, 44, 20, 16, 40, 88, 96], [84, 36, 12, 13, 37, 85, 117, 69, 68, 116], [38, 86, 118, 70, 71, 119, 87, 39, 15, 14], [54, 50, 98, 90, 42, 18, 22, 46, 94, 102], [82, 34, 10, 11, 35, 83, 115, 67, 66, 114], [80, 112, 64, 65, 113, 81, 33, 9, 8, 32], [17, 21, 45, 93, 101, 53, 49, 97, 89, 41], [61, 63, 111, 79, 31, 7, 5, 29, 77, 109], [23, 19, 43, 91, 99, 51, 55, 103, 95, 47], [57, 105, 73, 25, 1, 3, 27, 75, 107, 59],
+	
+	[6, 2, 26, 50, 54, 30], [74, 106, 82, 114, 90, 98], [42, 66, 67, 43, 19, 18], [110, 78, 102, 94, 118, 86], [70, 46, 22, 23, 47, 71], [60, 62, 38, 14, 12, 36], [0, 4, 28, 52, 48, 24], [100, 76, 108, 84, 116, 92], [104, 72, 96, 88, 112, 80], [58, 56, 32, 8, 10, 34], [13, 15, 39, 63, 61, 37], [87, 119, 95, 103, 79, 111], [115, 83, 107, 75, 99, 91], [11, 9, 33, 57, 59, 35], [64, 40, 16, 17, 41, 65], [20, 44, 68, 69, 45, 21], [117, 85, 109, 77, 101, 93], [53, 29, 5, 1, 25, 49], [7, 31, 55, 51, 27, 3], [113, 89, 97, 73, 105, 81], 
+	
+	[4, 0, 2, 6], [20, 21, 17, 16], [12, 14, 15, 13], [22, 18, 19, 23], [10, 8, 9, 11], [1, 5, 7, 3], [24, 48, 96, 72], [92, 116, 68, 44], [84, 108, 60, 36], [100, 52, 28, 76], [30, 54, 102, 78], [90, 114, 66, 42], [106, 58, 34, 82], [56, 104, 80, 32], [88, 40, 64, 112], [65, 41, 89, 113], [33, 81, 105, 57], [35, 59, 107, 83], [67, 115, 91, 43], [75, 27, 51, 99], [118, 94, 46, 70], [71, 47, 95, 119], [69, 117,93, 45], [62, 110, 86, 38], [26, 74, 98, 50], [97, 49, 25, 73], [101, 77, 29, 53], [85, 37, 61, 109], [39, 87, 111, 63], [103, 55, 31, 79]
 ];
-CIRCUMRADIUS_TRUNCATED_ICOSIDODECAHEDRON = 1;
+CIRCUMRADIUS_TRUNCATED_ICOSIDODECAHEDRON = sqrt(31 + 12 * sqrt(5)) / 2;
 
 // Source: https://en.wikipedia.org/wiki/Snub_dodecahedron
 // Source: https://mathworld.wolfram.com/SnubDodecahedron.html
@@ -1124,29 +1521,34 @@ FACES_SNUB_DODECAHEDRON =
 ];
 CIRCUMRADIUS_SNUB_DODECAHEDRON = 2.155837375115640;
 
+
+///////////////////////////////////
+// Data: Regular N-gon Polyhedra //
+///////////////////////////////////
+
 // Source: https://en.wikipedia.org/wiki/Prism_(geometry)
-function VERTICES_PRISM(n = 3) = 
+function VERTICES_PRISM(n = 5) = 
 	let (
-		radius = 1 / (2 * sin(180 / n))
+		r = 1 / (2 * sin(180 / n))
 	)
-	[for (k = [0 : 2 * n - 1]) [radius * cos(360 * floor(k / 2) / n), radius * sin(360 * floor(k / 2) / n), pow(-1, k) * 1 / 2]];
-function FACES_PRISM(n = 3) = 
+	[for (k = [0 : 2 * n - 1]) [r * cos(360 * floor(k / 2) / n), r * sin(360 * floor(k / 2) / n), pow(-1, k) * 1 / 2]];
+function FACES_PRISM(n = 5) = 
 	let (
 		top_face = [for (k = [0 : n - 1]) 2 * k + 1],
 		bottom_face = [for (k = [0 : n - 1]) 2 * (n - k - 1)],
 		side_faces = [for (k = [0 : n - 1]) [for (l = [1, 0, 2, 3]) (l + 2 * k) % (2 * n)]]
 	) 
 	concat([top_face, bottom_face], side_faces);
-function CIRCUMRADIUS_PRISM(n = 3) = 1 / sin(atan(sin(180 / n))) / 2;
+function CIRCUMRADIUS_PRISM(n = 5) = 1 / sin(atan(sin(180 / n))) / 2;
 		
 // Source: https://en.wikipedia.org/wiki/Antiprism
-function VERTICES_ANTIPRISM(n = 3) =
+function VERTICES_ANTIPRISM(n = 5) =
 	let (
-		radius = 1 / (2 * sin(180 / n)),
-		height = sqrt((cos(180 / n) - cos(360 / n)) / 2)
+		r = 1 / (2 * sin(180 / n)),
+		h = sqrt((cos(180 / n) - cos(360 / n)) / 2)
 	)
-	[for (k = [0 : 2 * n - 1]) [radius * cos(180 * k / n), radius * sin(180 * k / n), radius * pow(-1, k) * height]];
-function FACES_ANTIPRISM(n = 3) = 
+	[for (k = [0 : 2 * n - 1]) [r * cos(180 * k / n), r * sin(180 * k / n), r * pow(-1, k) * h]];
+function FACES_ANTIPRISM(n = 5) = 
 	let (
 		top_face = [for (k = [0 : n - 1]) 2 * k + 1],
 		bottom_face = [for (k = [0 : n - 1]) 2 * (n - k - 1)],
@@ -1154,12 +1556,342 @@ function FACES_ANTIPRISM(n = 3) =
 		side_faces_bottom = [for (k = [1 : 2 : 2 * n - 1]) [for (l = [0 : 2]) (l + k) % (2 * n)]]	
 	)
 	concat([top_face, bottom_face], side_faces_top, side_faces_bottom);
-function CIRCUMRADIUS_ANTIPRISM(n = 3) = 1 / 4 * sqrt(4 + 1 / pow(sin(90 / n), 2));
+function CIRCUMRADIUS_ANTIPRISM(n = 5) = 1 / 4 * sqrt(4 + 1 / pow(sin(90 / n), 2));
+		
+// Source: https://en.wikipedia.org/wiki/Trapezohedron
+function VERTICES_TRAPEZOHEDRON(n = 5) =
+	let (
+		r = 1 / (2 * sin(180 / n)),
+		o = 1 / 4,
+		h = 1
+	)
+	concat([[0, 0, h], [0, 0, -h]], [for (k = [0 : 2 * n - 1]) [r * cos(180 * k / n), r * sin(180 * k / n), pow(-1, k) * o]]);
+function FACES_TRAPEZOHEDRON(n = 5) = 
+	let (
+		c = 2 * n,
+		top_faces = [for (k = [0 : n - 1]) [0, (2 + 2*k) % c + 2, 3 + 2*k, 2 + 2*k]],
+		bottom_faces = [for (k = [0 : n - 1]) [1, 3 + 2*k, (2 + 2*k) % c + 2, (3 + 2*k) % c + 2]]
+	)
+	concat(top_faces, bottom_faces);
+function CIRCUMRADIUS_TRAPEZOHEDRON(n = 5) = 1 / sin(atan(sin(180 / n))) / 2;
+		
+// Source: https://en.wikipedia.org/wiki/Prism_(geometry)#Star_prism
+function VERTICES_STAR_PRISM(n = 5, m = 2) = 
+	let (
+		r = 1 / (2 * sin(180 / n)),
+		vertices_top = [for (k = [0 : n - 1]) [r * cos(360 * k / n), r * sin(360 * k / n), 1 / 2]],
+		vertices_bottom = [for (k = [0 : n - 1]) [r * cos(360 * k / n), r * sin(360 * k / n), -1 / 2]],
+		vertices_star_top = [for (k = [0 : n - 1]) line_intersection(vertices_top[k], vertices_top[(k + m) % n], vertices_top[(k + 1) % n], vertices_top[mod_plus(k - m + 1, n)])],
+		vertices_star_bottom = [for (k = [0 : n - 1]) line_intersection(vertices_bottom[k], vertices_bottom[(k + m) % n], vertices_bottom[(k + 1) % n], vertices_bottom[mod_plus(k - m + 1, n)])]
+	)
+	concat(vertices_top, vertices_bottom, vertices_star_top, vertices_star_bottom);
+function FACES_STAR_PRISM(n = 5, m = 2) = 
+	let (
+		top_face = [for (k = [2 * n - 1 : - 1 : 0]) floor(k / 2) + 2 * n * (k % 2)],
+		bottom_face = [for (k = [0 : 2 * n - 1]) n + floor(k / 2) + 2 * n * (k % 2)],
+		side_faces = concat(
+			[for (k = [0 : n - 1]) [for (l = [0, 2*n, 3*n, n]) (l + k)]],
+			[for (k = [0 : n - 1]) [for (l = [0, n, 3*n-1+n*(1-ceil(k/n)), 2*n-1+n*(1-ceil(k/n))]) (l + k)]]	
+		)
+	) 
+	concat([top_face, bottom_face], side_faces);
+function CIRCUMRADIUS_STAR_PRISM(n = 5, m = 2) = 1 / sin(atan(sin(180 / n))) / 2;
+		
+// Source: https://en.wikipedia.org/wiki/Bipyramid#Star_bipyramids
+function VERTICES_STAR_DIPYRAMID(n = 5, m = 2) =
+	let (
+		r = 1 / cos(180 / n),
+		h = 1,
+		vertices_poles = [[0, 0, h], [0, 0, -h]],
+		vertices_ngon = [for (k = [0 : n - 1]) [r * cos(360 * k / n), r * sin(360 * k / n), 0]],
+		vertices_star = [for (k = [0 : n - 1]) line_intersection(vertices_ngon[k], vertices_ngon[(k + m) % n], vertices_ngon[(k + 1) % n], vertices_ngon[mod_plus(k - m + 1, n)])]
+	)
+	concat(vertices_poles, vertices_ngon, vertices_star);
+function FACES_STAR_DIPYRAMID(n = 5, m = 2) = 
+	let (
+		faces_top_forward = [for (k = [0 : n - 1]) [0, 2 + k, (n + 2) + (n + k - 1) % n]],
+		faces_top_backward = [for (k = [0 : n - 1]) [0, (n + 2) + (n + k) % n, 2 + k]],
+		faces_bottom_forward = [for (k = [0 : n - 1]) [1, (n + 2) + (n + k - 1) % n, 2 + k]],
+		faces_bottom_backward = [for (k = [0 : n - 1]) [1, 2 + k, (n + 2) + (n + k) % n]]
+	)
+	concat(faces_top_forward, faces_top_backward, faces_bottom_forward, faces_bottom_backward);
+function CIRCUMRADIUS_STAR_DIPYRAMID(n = 5, m = 2) = 1 / cos(180 / n);
 
 
-/////////////
-// Utility //
-/////////////
+//////////////////////////
+// Data: Catalan Solids //
+//////////////////////////	
+
+// Source: https://en.wikipedia.org/wiki/Triakis_tetrahedron
+VERTICES_TRIAKIS_TETRAHEDRON = [
+	[0, 0, -5/(2*sqrt(6))],  //0
+	[0, 0, sqrt(3/2)/2],  //1
+	[-5/(3*sqrt(3)), 0, 5/(6*sqrt(6))],  //2
+	[-1/(2*sqrt(3)), -1/2, -1/(2*sqrt(6))],  //3
+	[-1/(2*sqrt(3)), +1/2, -1/(2*sqrt(6))],  //4
+	[5/(6*sqrt(3)), -5/6, 5/(6*sqrt(6))],  //5
+	[5/(6*sqrt(3)), +5/6, 5/(6*sqrt(6))],  //6
+	[1/sqrt(3), 0, -(1/(2*sqrt(6)))]   //7
+];		
+FACES_TRIAKIS_TETRAHEDRON = [
+	[1, 6, 5], [5, 6, 7], [2, 1, 5], [1, 2, 6], [6, 2, 4], [2, 5, 3], [3, 5, 0], [5, 7, 0], [6, 0, 7], [6, 4, 0], [4, 2, 0], [2, 3, 0]
+];
+CIRCUMRADIUS_TRIAKIS_TETRAHEDRON = 1;
+		
+// Source: https://en.wikipedia.org/wiki/Rhombic_dodecahedron
+VERTICES_RHOMBIC_DODECAHEDRON = [
+	[+1/sqrt(3), +1/sqrt(3), +1/sqrt(3)],  //0
+	[+1/sqrt(3), +1/sqrt(3), -1/sqrt(3)],  //1
+	[+1/sqrt(3), -1/sqrt(3), +1/sqrt(3)],  //2
+	[+1/sqrt(3), -1/sqrt(3), -1/sqrt(3)],  //3
+	[-1/sqrt(3), +1/sqrt(3), +1/sqrt(3)],  //4
+	[-1/sqrt(3), +1/sqrt(3), -1/sqrt(3)],  //5
+	[-1/sqrt(3), -1/sqrt(3), +1/sqrt(3)],  //6
+	[-1/sqrt(3), -1/sqrt(3), -1/sqrt(3)],  //7
+	[+2/sqrt(3), 0, 0],  //8
+	[-2/sqrt(3), 0, 0],  //9
+	[0, +2/sqrt(3), 0],  //10
+	[0, -2/sqrt(3), 0],  //11
+	[0, 0, +2/sqrt(3)],  //12
+	[0, 0, -2/sqrt(3)]   //13
+];
+FACES_RHOMBIC_DODECAHEDRON = [
+	[12, 4, 10, 0], [12, 0, 8, 2], [12, 2, 11, 6], [12, 6, 9, 4], [13, 3, 8, 1], [13, 1, 10, 5], [13, 5, 9, 7], [13, 7, 11, 3], [4, 9, 5, 10], [0, 10, 1, 8], [2, 8, 3, 11], [9, 6, 11, 7]
+];
+CIRCUMRADIUS_RHOMBIC_DODECAHEDRON = 2 / sqrt(3);
+
+// Source: https://en.wikipedia.org/wiki/Tetrakis_hexahedron
+VERTICES_TETRAKIS_HEXAHEDRON = [
+	[-2 * sqrt(2)/3, 0, -2/3],  //0
+	[-2 * sqrt(2)/3, 0, +2/3],  //1
+	[-1/sqrt(2), -1/sqrt(2), 0],  //2
+	[-1/sqrt(2), +1/sqrt(2), 0],  //3
+	[0, -2 * sqrt(2)/3, -2/3],  //4
+	[0, -2 * sqrt(2)/3, +2/3],  //5
+	[0, 0, -1],  //6
+	[0, 0, +1],  //7
+	[0, 2 * sqrt(2)/3, -2/3],  //8
+	[0, 2 * sqrt(2)/3, +2/3],  //9
+	[1/sqrt(2), -1/sqrt(2), 0],  //10
+	[1/sqrt(2), +1/sqrt(2), 0],  //11
+	[2 * sqrt(2)/3, 0, -2/3],  //12
+	[2 * sqrt(2)/3, 0, +2/3]   //13
+];
+FACES_TETRAKIS_HEXAHEDRON =
+[
+	[7, 9, 13], [7, 13, 5], [7, 5, 1], [7, 1, 9], [10, 5, 13], [10, 13, 12], [10, 12, 4], [10, 4, 5], [2, 1, 5], [2, 5, 4], [2, 4, 0], [2, 0, 1], [3, 9, 1], [3, 1, 0], [3, 0, 8], [3, 8, 9], [11, 9, 8], [11, 8, 12], [11, 12, 13], [11, 13, 9], [6, 8, 0], [6, 0, 4], [6, 4, 12], [6, 12, 8]
+];
+CIRCUMRADIUS_TETRAKIS_HEXAHEDRON = 1;
+
+//Source: https://en.wikipedia.org/wiki/Rhombic_triacontahedron
+VERTICES_RHOMBIC_TRIACONTAHEDRON = [
+	[0, 0, -PHI],
+	[0, 0, +PHI],
+	[+2/sqrt(5), 0, (+5+3*sqrt(5))/10],
+	[-2/sqrt(5), 0, (-5-3*sqrt(5))/10],
+	[-1 - 1/sqrt(5), 0, (+5 + sqrt(5))/10],
+	[-1 - 1/sqrt(5), 0, (-5 + sqrt(5))/10],	
+	[+1 + 1/sqrt(5), 0, (+5 - sqrt(5))/10],
+	[+1 + 1/sqrt(5), 0, (-5 - sqrt(5))/10],
+	
+	[-1/sqrt(5), -sqrt(1 + 2/sqrt(5)), (+5 + sqrt(5))/10],
+	[-1/sqrt(5), -sqrt(1 + 2/sqrt(5)), (-5 + sqrt(5))/10],
+	[-1/sqrt(5), +sqrt(1 + 2/sqrt(5)), (+5 + sqrt(5))/10],
+	[-1/sqrt(5), +sqrt(1 + 2/sqrt(5)), (-5 + sqrt(5))/10],
+	[+1/sqrt(5), -sqrt(1 + 2/sqrt(5)), (+5 - sqrt(5))/10],
+	[+1/sqrt(5), -sqrt(1 + 2/sqrt(5)), (-5 - sqrt(5))/10],
+	[+1/sqrt(5), +sqrt(1 + 2/sqrt(5)), (+5 - sqrt(5))/10],
+	[+1/sqrt(5), +sqrt(1 + 2/sqrt(5)), (-5 - sqrt(5))/10],
+	
+	[(+5+3*sqrt(5))/10, -sqrt((5+sqrt(5))/10), (+5+sqrt(5))/10],
+	[(+5+3*sqrt(5))/10, -sqrt((5+sqrt(5))/10), (-5+sqrt(5))/10],
+	[(+5+3*sqrt(5))/10, +sqrt((5+sqrt(5))/10), (+5+sqrt(5))/10],
+	[(+5+3*sqrt(5))/10, +sqrt((5+sqrt(5))/10), (-5+sqrt(5))/10],
+	
+	[(-5-3*sqrt(5))/10, -sqrt((5+sqrt(5))/10), (+5-sqrt(5))/10],
+	[(-5-3*sqrt(5))/10, -sqrt((5+sqrt(5))/10), (-5-sqrt(5))/10],
+	[(-5-3*sqrt(5))/10, +sqrt((5+sqrt(5))/10), (+5-sqrt(5))/10],
+	[(-5-3*sqrt(5))/10, +sqrt((5+sqrt(5))/10), (-5-sqrt(5))/10],
+	
+	[(+5+sqrt(5))/10, +sqrt(2/(5+sqrt(5))), (-5-3*sqrt(5))/10],
+	[(-5-sqrt(5))/10, +sqrt(2/(5+sqrt(5))), (+5+3*sqrt(5))/10],
+	
+	[(+5-sqrt(5))/10, -sqrt((5+sqrt(5))/10), (+5+3*sqrt(5))/10], 
+	[(+5-sqrt(5))/10, +sqrt((5+sqrt(5))/10), (+5+3*sqrt(5))/10],
+	
+	[(-5-sqrt(5))/10, -sqrt((5-sqrt(5))/10), (+5+3*sqrt(5))/10],
+	[(+5+sqrt(5))/10, -sqrt((5-sqrt(5))/10), (-5-3*sqrt(5))/10],
+	
+	[(-5+sqrt(5))/10, -sqrt((5+sqrt(5))/10), (-5-3*sqrt(5))/10],
+	[(-5+sqrt(5))/10, +sqrt((5+sqrt(5))/10), (-5-3*sqrt(5))/10]
+];
+FACES_RHOMBIC_TRIACONTAHEDRON = [
+	[1, 26, 8, 28], [1, 28, 4, 25], [1, 25, 10, 27], [1, 27, 18, 2], [1, 2, 16, 26], [0, 31, 23, 3], [0, 3, 21, 30], [0, 30, 13, 29], [0, 29, 7, 24], [0, 24, 15, 31], [3, 23, 5, 21], [31, 15, 11, 23], [24, 7, 19, 15], [29, 13, 17, 7], [30, 21, 9, 13], [28, 8, 20, 4], [26, 16, 12, 8], [2, 18, 6, 16], [27, 10, 14, 18], [25, 4, 22, 10], [4, 20, 21, 5], [8, 12, 13, 9], [16, 6, 7, 17], [18, 14, 15, 19], [10, 22, 23, 11], [23, 22, 4, 5], [21, 20, 8, 9], [13, 12, 16, 17], [7, 6, 18, 19], [15, 14, 10, 11]
+];
+CIRCUMRADIUS_RHOMBIC_TRIACONTAHEDRON = PHI;
+
+
+//////////////////////////
+// Data: Johnson Solids //
+//////////////////////////
+
+//Source: https://en.wikipedia.org/wiki/Triangular_cupola
+VERTICES_TRIANGULAR_COPULA = [
+	[+1/2, +sqrt(3)/2, 0],  //0
+	[+1/2, -sqrt(3)/2, 0],  //1
+	[-1/2, +sqrt(3)/2, 0],  //2
+	[-1/2, -sqrt(3)/2, 0],  //3
+	[+1, 0, 0],  //4
+	[-1, 0, 0],  //5
+	
+	[+1/2, +1/sqrt(12), sqrt(2/3)],  //6
+	[-1/2, +1/sqrt(12), sqrt(2/3)],  //7
+	[0, -1/sqrt(3), sqrt(2/3)]   //8
+];
+FACES_TRIANGULAR_COPULA = [
+	[2, 0, 4, 1, 3, 5], [6, 8, 7],
+	[0, 6, 7, 2], [1, 8, 6, 4], [7, 8, 3, 5],
+	[8, 1, 3], [7, 5, 2], [6, 0, 4]
+];
+CIRCUMRADIUS_TRIANGULAR_COPULA = 1;
+
+//Source: https://en.wikipedia.org/wiki/Square_cupola
+VERTICES_SQUARE_COPULA = [
+	[+(1 + sqrt(2))/2, +1/2, 0],  //0
+	[+(1 + sqrt(2))/2, -1/2, 0],  //1
+	[-(1 + sqrt(2))/2, +1/2, 0],  //2
+	[-(1 + sqrt(2))/2, -1/2, 0],  //3
+	[+1/2, +(1 + sqrt(2))/2, 0],  //4
+	[+1/2, -(1 + sqrt(2))/2, 0],  //5
+	[-1/2, +(1 + sqrt(2))/2, 0],  //6
+	[-1/2, -(1 + sqrt(2))/2, 0],  //7
+
+	[+1/sqrt(2), 0, +1/sqrt(2)],  //8
+	[-1/sqrt(2), 0, +1/sqrt(2)],  //9
+	[0, +1/sqrt(2), +1/sqrt(2)],  //10
+	[0, -1/sqrt(2), +1/sqrt(2)]   //11
+];
+FACES_SQUARE_COPULA = [
+	[10, 8, 11, 9], [4, 6, 2, 3, 7, 5, 1, 0],
+	[8, 10, 4, 0], [10, 9, 2, 6], [9, 11, 7, 3], [11, 8, 1, 5],
+	[1, 8, 0], [4, 10, 6], [2, 9, 3], [7, 11, 5]
+];
+CIRCUMRADIUS_SQUARE_COPULA = sqrt(1 + sqrt(2) / 2);
+
+//Source: https://en.wikipedia.org/wiki/Pentagonal_cupola
+VERTICES_PENTAGONAL_COPULA = [
+	[+1, +1 * sqrt(3 + 4 * PHI), 0],  //0
+	[+1, -1 * sqrt(3 + 4 * PHI), 0],  //1
+	[-1, +1 * sqrt(3 + 4 * PHI), 0],  //2
+	[-1, -1 * sqrt(3 + 4 * PHI), 0],  //3
+	[+1 * PHI * PHI, +1 * sqrt(2 + PHI), 0],  //4
+	[+1 * PHI * PHI, -1 * sqrt(2 + PHI), 0],  //5
+	[-1 * PHI * PHI, +1 * sqrt(2 + PHI), 0],  //6
+	[-1 * PHI * PHI, -1 * sqrt(2 + PHI), 0],  //7
+	[+1 * 2 * PHI, 0, 0],  //8
+	[-1 * 2 * PHI, 0, 0],  //9
+
+	[0, +sqrt((10 + 2 * sqrt(5)) / 5), +2 * sqrt((3 - PHI) / 5)],  //10
+	[+1 * PHI, +sqrt((5 - sqrt(5)) / 10), +2 * sqrt((3 - PHI) / 5)],  //11
+	[-1 * PHI, +sqrt((5 - sqrt(5)) / 10), +2 * sqrt((3 - PHI) / 5)],  //12
+	[+1, -sqrt((5 + 2 * sqrt(5)) / 5), +2 * sqrt((3 - PHI) / 5)],  //13
+	[-1, -sqrt((5 + 2 * sqrt(5)) / 5), +2 * sqrt((3 - PHI) / 5)],  //14
+] / 2;
+FACES_PENTAGONAL_COPULA = [
+	[0, 2, 6, 9, 7, 3, 1, 5, 8, 4], [10, 11, 13, 14, 12],
+	[4, 8, 11], [5, 1, 13], [3, 7, 14], [9, 6, 12], [2, 0, 10],
+	[2, 10, 12, 6], [0, 4, 11, 10], [8, 5, 13, 11], [1, 3, 14, 13], [7, 9, 12, 14]
+];
+CIRCUMRADIUS_PENTAGONAL_COPULA = PHI;
+		
+//Source: https://en.wikipedia.org/wiki/Pentagonal_rotunda
+VERTICES_PENTAGONAL_ROTUNDA = [
+	[+1, +1 * sqrt(3 + 4 * PHI), 0],  //0
+	[+1, -1 * sqrt(3 + 4 * PHI), 0],  //1
+	[-1, +1 * sqrt(3 + 4 * PHI), 0],  //2
+	[-1, -1 * sqrt(3 + 4 * PHI), 0],  //3
+	[+1 * PHI * PHI, +1 * sqrt(2 + PHI), 0],  //4
+	[+1 * PHI * PHI, -1 * sqrt(2 + PHI), 0],  //5
+	[-1 * PHI * PHI, +1 * sqrt(2 + PHI), 0],  //6
+	[-1 * PHI * PHI, -1 * sqrt(2 + PHI), 0],  //7
+	[+1 * 2 * PHI, 0, 0],  //8
+	[-1 * 2 * PHI, 0, 0],  //9
+
+	[0, -sqrt((10 + 2 * sqrt(5)) / 5), +2 * sqrt((5 + 2 * sqrt(5)) / 5)],  //10
+	[+1, +sqrt((5 + 2 * sqrt(5)) / 5), +2 * sqrt((5 + 2 * sqrt(5)) / 5)],  //11
+	[-1, +sqrt((5 + 2 * sqrt(5)) / 5), +2 * sqrt((5 + 2 * sqrt(5)) / 5)],  //12
+	[+1 * PHI, -sqrt((5 - sqrt(5)) / 10), +2 * sqrt((5 + 2 * sqrt(5)) / 5)],  //13
+	[-1 * PHI, -sqrt((5 - sqrt(5)) / 10), +2 * sqrt((5 + 2 * sqrt(5)) / 5)],  //14
+
+	[0, +2 * sqrt((5 + 2 * sqrt(5)) / 5), +sqrt((10 + 2 * sqrt(5)) / 5)],  //15
+	[+1 * PHI, -sqrt((25 + 11 * sqrt(5)) / 10), +sqrt((10 + 2 * sqrt(5)) / 5)],  //16
+	[-1 * PHI, -sqrt((25 + 11 * sqrt(5)) / 10), +sqrt((10 + 2 * sqrt(5)) / 5)],  //17
+	[+1 * PHI * PHI, +sqrt((5 + sqrt(5)) / 10), +sqrt((10 + 2 * sqrt(5)) / 5)],  //18
+	[-1 * PHI * PHI, +sqrt((5 + sqrt(5)) / 10), +sqrt((10 + 2 * sqrt(5)) / 5)]  //19
+] / 2;
+FACES_PENTAGONAL_ROTUNDA = [
+	[0, 2, 6, 9, 7, 3, 1, 5, 8, 4], [10, 14, 12, 11, 13],
+	[2, 15, 12, 19, 6], [9, 19, 14, 17, 7], [3, 17, 10, 16, 1], [5, 16, 13, 18, 8], [4, 18, 11, 15, 0],
+	[0, 15, 2], [6, 19, 9], [7, 17, 3], [1, 16, 5], [8, 18, 4],	[10, 17, 14], [14, 19, 12], [12, 15, 11], [11, 18, 13], [13, 16, 10]
+];
+CIRCUMRADIUS_PENTAGONAL_ROTUNDA = PHI;
+
+
+//////////////////////////////////
+// Data: Regular Star Polyhedra //
+//////////////////////////////////
+
+//Source: https://en.wikipedia.org/wiki/Small_stellated_dodecahedron
+VERTICES_SMALL_STELLATED_DODECAHEDRON = 
+	let (
+		stellated_intersections = [
+			[0, 11, 4, 6],   //12
+			[0, 9, 2, 8],    //13
+			[0, 5, 4, 10],   //14
+			[0, 1, 8, 6],    //15
+			[0, 7, 6, 8],    //16
+			[3, 2, 7, 9],    //17
+			[3, 6, 7, 9],    //18
+			[3, 10, 1, 11],  //19
+			[3, 8, 7, 5],    //20
+			[3, 4, 5, 11],   //21
+			[1, 4, 3, 8],    //22
+			[1, 0, 10, 5],   //23
+			[1, 6, 8, 7],    //24
+			[2, 7, 11, 0],   //25
+			[2, 3, 6, 9],    //26
+			[2, 5, 11, 4],   //27
+			[4, 1, 8, 9],    //28
+			[4, 3, 2, 5],    //29
+			[6, 3, 10, 11],  //30
+			[6, 1, 10, 11]   //31
+		],
+		vertices_stellated = [for (int = stellated_intersections) line_intersection(VERTICES_ICOSAHEDRON[int[0]], VERTICES_ICOSAHEDRON[int[1]], VERTICES_ICOSAHEDRON[int[2]], VERTICES_ICOSAHEDRON[int[3]])]
+	)
+	concat(VERTICES_ICOSAHEDRON, vertices_stellated);
+FACES_SMALL_STELLATED_DODECAHEDRON = [
+	[0, 13, 12], [0, 14, 13], [0, 15, 14], [0, 16, 15], [0, 12, 16],
+	[1, 19, 20], [1, 20, 22], [1, 22, 23], [1, 23, 24], [1, 24, 19],
+	[2, 12, 13], [2, 25, 12], [2, 26, 25], [2, 27, 26], [2, 13, 27],
+	[3, 18, 17], [3, 19, 18], [3, 20, 19], [3, 21, 20], [3, 17, 21],
+	[4, 13, 14], [4, 27, 13], [4, 14, 28], [4, 28, 29], [4, 29, 27],
+	[5, 22, 20], [5, 20, 21], [5, 21, 29], [5, 29, 28], [5, 28, 22],
+	[6, 16, 12], [6, 12, 25], [6, 25, 30], [6, 30, 31], [6, 31, 16],
+	[7, 31, 30], [7, 30, 18], [7, 18, 19], [7, 19, 24], [7, 24, 31],
+	[8, 14, 15], [8, 15, 23], [8, 23, 22], [8, 22, 28], [8, 28, 14],
+	[9, 27, 29], [9, 29, 21], [9, 21, 17], [9, 17, 26], [9, 26, 27],
+	[10, 15, 16], [10, 16, 31], [10, 31, 24], [10, 24, 23], [10, 23, 15],
+	[11, 30, 25], [11, 25, 26], [11, 26, 17], [11, 17, 18], [11, 18, 30]
+];
+CIRCUMRADIUS_SMALL_STELLATED_DODECAHEDRON = PHI * sin(180 / 5);
+
+
+/////////////////
+// Mathematics //
+/////////////////
+
+// Positive modulo operator (returns i % n on the positive domain).
+function mod_plus(i, n) = (i % n + n) % n;
 
 // Calculates the sum of a vector (elements of the vector may also be vectors).
 function sum(v) = [for (e = v) 1] * v;
@@ -1177,6 +1909,9 @@ function delete_duplicates(v, i = 0, r = []) = let(e = v[i]) i < len(v) ? delete
 function is_element(v, elem, i = 0) = let (e = v[i]) i < len(v) ? e == elem ? true : is_element(v, elem, i + 1) : false;
 // Cycles the elements of v forwards once (first element goes to last position).
 function cycle(v) = [for (i = [0 : len(v) - 1]) v[(i + 1) % len(v)]];
+	
+// Calculates the point where two 3D lines intersect, the two lines are given by (v1, v2) and (v3, v4).
+function line_intersection(v1, v2, v3, v4) = let (a = v1 - v2, b = v4 - v3, c = v3 - v1) v1 + a * (cross(c, b) * cross(a, b)) / pow(norm(cross(a, b)), 2);
 	
 // Rotation for a shape pointing straight up (z-axis) to align with two points.
 function rotation_to_points(p1, p2) = [-acos((p2[2] - p1[2]) / norm(p1 - p2)), 0, -atan2(p2[0] - p1[0], p2[1] - p1[1])];

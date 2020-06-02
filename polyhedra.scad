@@ -37,7 +37,9 @@
  * === Catalon Solids ===
  *  triakis_tetrahedron
  *  rhombic_dodecahedron
+ *  triakis_octahedron
  *  tetrakis_hexahedron
+ *  deltoidal_icositetrahedron
  *  rhombic_triacontahedron
  *
  * === Johnson Solids ===
@@ -103,7 +105,7 @@ function list_polyhedra() =
 	// Regular N-gon Polyhedra.
 	"prism", "antiprism", "trapezohedron", "star_prism", "star_dipyramid", 
 	// Catalan solids.
-	"triakis_tetrahedron", "rhombic_dodecahedron", "tetrakis_hexahedron", "rhombic_triacontahedron",
+	"triakis_tetrahedron", "rhombic_dodecahedron", "triakis_octahedron", "tetrakis_hexahedron", "deltoidal_icositetrahedron", "rhombic_triacontahedron",
 	// Johnson solids.
 	"triangular_copula", "square_copula", "pentagonal_copula", "pentagonal_rotunda",
 	// Regular star polyhedra.
@@ -245,8 +247,12 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 		VERTICES_TRIAKIS_TETRAHEDRON
 	: id == "rhombic_dodecahedron" ?
 		VERTICES_RHOMBIC_DODECAHEDRON
+	: id == "triakis_octahedron" ?
+		VERTICES_TRIAKIS_OCTAHEDRON
 	: id == "tetrakis_hexahedron" ?
 		VERTICES_TETRAKIS_HEXAHEDRON
+	: id == "deltoidal_icositetrahedron" ?
+		VERTICES_DELTOIDAL_ICOSITETRAHEDRON
 	: id == "rhombic_triacontahedron" ?	
 		VERTICES_RHOMBIC_TRIACONTAHEDRON
 	// Johnson solids.
@@ -322,8 +328,12 @@ function polyhedron_faces(id, n = 5, m = 2) =
 		FACES_TRIAKIS_TETRAHEDRON
 	: id == "rhombic_dodecahedron" ?
 		FACES_RHOMBIC_DODECAHEDRON
+	: id == "triakis_octahedron" ?
+		FACES_TRIAKIS_OCTAHEDRON
 	: id == "tetrakis_hexahedron" ?
 		FACES_TETRAKIS_HEXAHEDRON
+	: id == "deltoidal_icositetrahedron" ?
+		FACES_DELTOIDAL_ICOSITETRAHEDRON
 	: id == "rhombic_triacontahedron" ?	
 		FACES_RHOMBIC_TRIACONTAHEDRON
 	// Johnson solids.
@@ -402,8 +412,12 @@ function circumradius_factor(id, n = 5, m = 2) =
 		CIRCUMRADIUS_TRIAKIS_TETRAHEDRON
 	: id == "rhombic_dodecahedron" ?
 		CIRCUMRADIUS_RHOMBIC_DODECAHEDRON
+	: id == "triakis_octahedron" ?
+		CIRCUMRADIUS_TRIAKIS_OCTAHEDRON
 	: id == "tetrakis_hexahedron" ?
 		CIRCUMRADIUS_TETRAKIS_HEXAHEDRON
+	: id == "deltoidal_icositetrahedron" ?
+		CIRCUMRADIUS_DELTOIDAL_ICOSITETRAHEDRON
 	: id == "rhombic_triacontahedron" ?	
 		CIRCUMRADIUS_RHOMBIC_TRIACONTAHEDRON
 	// Johnson solids.
@@ -535,19 +549,19 @@ CIRCUMRADIUS_ICOSAHEDRON = PHI * sin(180 / 5);
 
 // Source: https://en.wikipedia.org/wiki/Truncated_tetrahedron
 VERTICES_TRUNCATED_TETRAHEDRON = [
-	[+1 * 3, +1, +1],  //0
-	[+1, +1 * 3, +1],  //1
-	[+1, +1, +1 * 3],  //2
-	[-1 * 3, -1, +1],  //3
-	[-1, -1 * 3, +1],  //4
-	[-1, -1, +1 * 3],  //5
-	[-1 * 3, +1, -1],  //6
-	[-1, +1 * 3, -1],  //7
-	[-1, +1, -1 * 3],  //8
-	[+1 * 3, -1, -1],  //9
-	[+1, -1 * 3, -1],  //10
-	[+1, -1, -1 * 3]   //11
-] / sqrt(8);
+	[+3/sqrt(8), +1/sqrt(8), +1/sqrt(8)],  //0
+	[+1/sqrt(8), +3/sqrt(8), +1/sqrt(8)],  //1
+	[+1/sqrt(8), +1/sqrt(8), +3/sqrt(8)],  //2
+	[-3/sqrt(8), -1/sqrt(8), +1/sqrt(8)],  //3
+	[-1/sqrt(8), -3/sqrt(8), +1/sqrt(8)],  //4
+	[-1/sqrt(8), -1/sqrt(8), +3/sqrt(8)],  //5
+	[-3/sqrt(8), +1/sqrt(8), -1/sqrt(8)],  //6
+	[-1/sqrt(8), +3/sqrt(8), -1/sqrt(8)],  //7
+	[-1/sqrt(8), +1/sqrt(8), -3/sqrt(8)],  //8
+	[+3/sqrt(8), -1/sqrt(8), -1/sqrt(8)],  //9
+	[+1/sqrt(8), -3/sqrt(8), -1/sqrt(8)],  //10
+	[+1/sqrt(8), -1/sqrt(8), -3/sqrt(8)]   //11
+];
 FACES_TRUNCATED_TETRAHEDRON = [
 	[0, 2, 1], [3, 5, 4], [6, 8, 7], [9, 11, 10],
 	[2, 0, 9, 10, 4, 5], [1, 7, 8, 11, 9, 0],
@@ -581,33 +595,33 @@ CIRCUMRADIUS_CUBOCTAHEDRON = 1;
 
 // Source: https://en.wikipedia.org/wiki/Truncated_cube
 VERTICES_TRUNCATED_CUBE = [
-			[+(sqrt(2) - 1), +1, +1],  //0
-			[+(sqrt(2) - 1), +1, -1],  //1
-			[+(sqrt(2) - 1), -1, +1],  //2
-			[+(sqrt(2) - 1), -1, -1],  //3
-			[-(sqrt(2) - 1), +1, +1],  //4
-			[-(sqrt(2) - 1), +1, -1],  //5
-			[-(sqrt(2) - 1), -1, +1],  //6
-			[-(sqrt(2) - 1), -1, -1],  //7
+	[+(sqrt(2) - 1), +1, +1],  //0
+	[+(sqrt(2) - 1), +1, -1],  //1
+	[+(sqrt(2) - 1), -1, +1],  //2
+	[+(sqrt(2) - 1), -1, -1],  //3
+	[-(sqrt(2) - 1), +1, +1],  //4
+	[-(sqrt(2) - 1), +1, -1],  //5
+	[-(sqrt(2) - 1), -1, +1],  //6
+	[-(sqrt(2) - 1), -1, -1],  //7
 
-			[+1, +(sqrt(2) - 1), +1],  //8
-			[+1, +(sqrt(2) - 1), -1],  //9
-			[+1, -(sqrt(2) - 1), +1],  //10
-			[+1, -(sqrt(2) - 1), -1],  //11
-			[-1, +(sqrt(2) - 1), +1],  //12
-			[-1, +(sqrt(2) - 1), -1],  //13
-			[-1, -(sqrt(2) - 1), +1],  //14
-			[-1, -(sqrt(2) - 1), -1],  //15
+	[+1, +(sqrt(2) - 1), +1],  //8
+	[+1, +(sqrt(2) - 1), -1],  //9
+	[+1, -(sqrt(2) - 1), +1],  //10
+	[+1, -(sqrt(2) - 1), -1],  //11
+	[-1, +(sqrt(2) - 1), +1],  //12
+	[-1, +(sqrt(2) - 1), -1],  //13
+	[-1, -(sqrt(2) - 1), +1],  //14
+	[-1, -(sqrt(2) - 1), -1],  //15
 
-			[+1, +1, +(sqrt(2) - 1)],  //16
-			[+1, +1, -(sqrt(2) - 1)],  //17
-			[+1, -1, +(sqrt(2) - 1)],  //18
-			[+1, -1, -(sqrt(2) - 1)],  //19
-			[-1, +1, +(sqrt(2) - 1)],  //20
-			[-1, +1, -(sqrt(2) - 1)],  //21
-			[-1, -1, +(sqrt(2) - 1)],  //22
-			[-1, -1, -(sqrt(2) - 1)],  //23
-		] / (2 * sqrt(2) - 2);
+	[+1, +1, +(sqrt(2) - 1)],  //16
+	[+1, +1, -(sqrt(2) - 1)],  //17
+	[+1, -1, +(sqrt(2) - 1)],  //18
+	[+1, -1, -(sqrt(2) - 1)],  //19
+	[-1, +1, +(sqrt(2) - 1)],  //20
+	[-1, +1, -(sqrt(2) - 1)],  //21
+	[-1, -1, +(sqrt(2) - 1)],  //22
+	[-1, -1, -(sqrt(2) - 1)],  //23
+] / (2 * sqrt(2) - 2);
 FACES_TRUNCATED_CUBE = [
 	[4, 0, 8, 10, 2, 6, 14, 12], [0, 4, 20, 21, 5, 1, 17, 16], [1, 5, 13, 15, 7, 3, 11, 9], [2, 18, 19, 3, 7, 23, 22, 6], [10, 8, 16, 17, 9, 11, 19, 18], [12, 14, 22, 23, 15, 13, 21, 20],
 		
@@ -1457,6 +1471,28 @@ FACES_RHOMBIC_DODECAHEDRON = [
 ];
 CIRCUMRADIUS_RHOMBIC_DODECAHEDRON = 2 / sqrt(3);
 
+// Source: https://en.wikipedia.org/wiki/Triakis_octahedron
+VERTICES_TRIAKIS_OCTAHEDRON = [
+	[+1/2, +1/2, +1/2],  //0
+	[+1/2, +1/2, -1/2],  //1
+	[+1/2, -1/2, +1/2],  //2
+	[+1/2, -1/2, -1/2],  //3
+	[-1/2, +1/2, +1/2],  //4
+	[-1/2, +1/2, -1/2],  //5
+	[-1/2, -1/2, +1/2],  //6
+	[-1/2, -1/2, -1/2],  //7
+	[0, 0, +1/2 + 1/sqrt(2)],  //8
+	[0, 0, -1/2 - 1/sqrt(2)],  //9
+	[0, +1/2 + 1/sqrt(2), 0],  //10
+	[0, -1/2 - 1/sqrt(2), 0],  //11
+	[+1/2 + 1/sqrt(2), 0, 0],  //12
+	[-1/2 - 1/sqrt(2), 0, 0],  //13
+];		
+FACES_TRIAKIS_OCTAHEDRON = [
+	[8, 0, 12], [8, 12, 2], [8, 2, 11], [8, 11, 6], [8, 6, 13], [8, 13, 4], [8, 4, 10], [8, 10, 0], [9, 1, 10], [9, 10, 5], [9, 5, 13], [9, 13, 7], [9, 7, 11], [9, 11, 3], [9, 3, 12], [9, 12, 1], [0, 10, 12], [1, 12, 10], [2, 12, 11], [3, 11, 12], [4, 13, 10], [5, 10, 13], [6, 11, 13], [7, 13, 11]
+];
+CIRCUMRADIUS_TRIAKIS_OCTAHEDRON = (1 + sqrt(2)) / 2;
+
 // Source: https://en.wikipedia.org/wiki/Tetrakis_hexahedron
 VERTICES_TETRAKIS_HEXAHEDRON = [
 	[-2 * sqrt(2)/3, 0, -2/3],  //0
@@ -1479,6 +1515,42 @@ FACES_TETRAKIS_HEXAHEDRON =
 	[7, 9, 13], [7, 13, 5], [7, 5, 1], [7, 1, 9], [10, 5, 13], [10, 13, 12], [10, 12, 4], [10, 4, 5], [2, 1, 5], [2, 5, 4], [2, 4, 0], [2, 0, 1], [3, 9, 1], [3, 1, 0], [3, 0, 8], [3, 8, 9], [11, 9, 8], [11, 8, 12], [11, 12, 13], [11, 13, 9], [6, 8, 0], [6, 0, 4], [6, 4, 12], [6, 12, 8]
 ];
 CIRCUMRADIUS_TETRAKIS_HEXAHEDRON = 1;
+
+
+//Source: https://en.wikipedia.org/wiki/Deltoidal_icositetrahedron
+VERTICES_DELTOIDAL_ICOSITETRAHEDRON = [
+	[+1/2*sqrt(5+1/sqrt(2)), +1/2*sqrt(5+1/sqrt(2)), 0],  //0
+	[+1/2*sqrt(5+1/sqrt(2)), -1/2*sqrt(5+1/sqrt(2)), 0],  //1
+	[-1/2*sqrt(5+1/sqrt(2)), +1/2*sqrt(5+1/sqrt(2)), 0],  //2
+	[-1/2*sqrt(5+1/sqrt(2)), -1/2*sqrt(5+1/sqrt(2)), 0],  //3
+	[0, +1/2*sqrt(5+1/sqrt(2)), +1/2*sqrt(5+1/sqrt(2))],  //4
+	[0, +1/2*sqrt(5+1/sqrt(2)), -1/2*sqrt(5+1/sqrt(2))],  //5
+	[0, -1/2*sqrt(5+1/sqrt(2)), +1/2*sqrt(5+1/sqrt(2))],  //6
+	[0, -1/2*sqrt(5+1/sqrt(2)), -1/2*sqrt(5+1/sqrt(2))],  //7
+	[+1/2*sqrt(5+1/sqrt(2)), 0, +1/2*sqrt(5+1/sqrt(2))],  //8
+	[+1/2*sqrt(5+1/sqrt(2)), 0, -1/2*sqrt(5+1/sqrt(2))],  //9
+	[-1/2*sqrt(5+1/sqrt(2)), 0, +1/2*sqrt(5+1/sqrt(2))],  //10
+	[-1/2*sqrt(5+1/sqrt(2)), 0, -1/2*sqrt(5+1/sqrt(2))],  //11
+	[+sqrt(2+sqrt(2))/2, +sqrt(2+sqrt(2))/2, +sqrt(2+sqrt(2))/2],  //12
+	[+sqrt(2+sqrt(2))/2, +sqrt(2+sqrt(2))/2, -sqrt(2+sqrt(2))/2],  //13
+	[+sqrt(2+sqrt(2))/2, -sqrt(2+sqrt(2))/2, +sqrt(2+sqrt(2))/2],  //14
+	[+sqrt(2+sqrt(2))/2, -sqrt(2+sqrt(2))/2, -sqrt(2+sqrt(2))/2],  //15
+	[-sqrt(2+sqrt(2))/2, +sqrt(2+sqrt(2))/2, +sqrt(2+sqrt(2))/2],  //16
+	[-sqrt(2+sqrt(2))/2, +sqrt(2+sqrt(2))/2, -sqrt(2+sqrt(2))/2],  //17
+	[-sqrt(2+sqrt(2))/2, -sqrt(2+sqrt(2))/2, +sqrt(2+sqrt(2))/2],  //18
+	[-sqrt(2+sqrt(2))/2, -sqrt(2+sqrt(2))/2, -sqrt(2+sqrt(2))/2],  //19
+	[+sqrt(10+sqrt(2))/2, 0, 0],  //20
+	[-sqrt(10+sqrt(2))/2, 0, 0],  //21
+	[0, +sqrt(10+sqrt(2))/2, 0],  //22
+	[0, -sqrt(10+sqrt(2))/2, 0],  //23
+	[0, 0, +sqrt(10+sqrt(2))/2],  //24
+	[0, 0, -sqrt(10+sqrt(2))/2]   //25
+];
+FACES_DELTOIDAL_ICOSITETRAHEDRON =
+[
+	[20, 8, 12, 0], [20, 0, 13, 9], [20, 9, 15, 1], [20, 1, 14, 8], [21, 10, 18, 3], [21, 3, 19, 11], [21, 11, 17, 2], [21, 2, 16, 10], [22, 4, 16, 2], [22, 2, 17, 5], [22, 5, 13, 0], [22, 0, 12, 4], [23, 6, 14, 1], [23, 1, 15, 7], [23, 7, 19, 3], [23, 3, 18, 6], [24, 8, 14, 6], [24, 6, 18, 10], [24, 10, 16, 4], [24, 4, 12, 8], [25, 11, 19, 7], [25, 7, 15, 9], [25, 9, 13, 5], [25, 5, 17, 11]
+];
+CIRCUMRADIUS_DELTOIDAL_ICOSITETRAHEDRON = sqrt(10 + sqrt(2)) / 2;
 
 //Source: https://en.wikipedia.org/wiki/Rhombic_triacontahedron
 VERTICES_RHOMBIC_TRIACONTAHEDRON = [
@@ -1696,24 +1768,44 @@ function sum(v) = [for (e = v) 1] * v;
 // Calculates the mean of a vector (elements of the vector may also be vectors).
 function mean(v) = sum(v) / len(v);
 
-// Returns all edges for a set of faces (used to draw a polygon).
-function get_all_edges(faces, i = 0, r = []) = delete_duplicates(let(f = faces[i]) i < len(faces) ? get_all_edges(faces, i + 1, concat(r, get_edges(f))) : r);
-function get_edges(face) = [for (i = [0 : len(face) - 1]) [face[i], face[(i + 1) % len(face)]]];
-// Deletes all duplicates in a vector.
-// TODO: fix cyclic elements.
-function delete_duplicates(v, i = 0, r = []) = let(e = v[i]) i < len(v) ? delete_duplicates(v, i + 1, (is_element(r, e) || is_element(r, cycle(e)) ? r : concat(r, [e]))) : r;
 // Determines whether elem is part of vector.
 function is_element(v, elem, i = 0) = let (e = v[i]) i < len(v) ? e == elem ? true : is_element(v, elem, i + 1) : false;
+
 // Cycles the elements of v forwards once (first element goes to last position).
 function cycle(v) = [for (i = [0 : len(v) - 1]) v[(i + 1) % len(v)]];
 	
+// Cycles the elements of v such that e1 and e2 are first.
+function cycle_to_first(v, e1, e2) = (v[0] == e1 && v[1] == e2) || (v[0] == e2 && v[1] == e1) ? v : cycle_to_first(cycle(v), e1, e2);
+
+// Deletes all duplicates in a vector.
+function delete_duplicates(v, i = 0, r = []) = let(e = v[i]) i < len(v) ? delete_duplicates(v, i + 1, (is_element(r, e) ? r : concat(r, [e]))) : r;
+// TODO: fix cyclic elements.
+function delete_cyclic_duplicates(v, i = 0, r = []) = let(e = v[i]) i < len(v) ? delete_cyclic_duplicates(v, i + 1, (is_element(r, e) || is_element(r, cycle(e)) ? r : concat(r, [e]))) : r;
+
+
+//////////////
+// Geometry //
+//////////////
+
 // Calculates the point where two 3D lines intersect, the two lines are given by (v1, v2) and (v3, v4).
 function line_intersection(v1, v2, v3, v4) = let (a = v1 - v2, b = v4 - v3, c = v3 - v1) v1 + a * (cross(c, b) * cross(a, b)) / pow(norm(cross(a, b)), 2);
+
+// Calculates the distance between two parallel planes.
+function parallel_plane_distance(p1, p2) = let (n1 = plane_orthonormal(p1), n2 = plane_orthonormal(p2)) assert(norm(n1 - n2) < pow(10, -5)) abs((p1[0] - p2[0]) * n1);
+function plane_orthonormal(p) = let(v1 = p[0] -  mean(p), v2 = p[1] - mean(p), n = cross(v2, v1)) n / norm(n);
 	
 // Rotation for a shape pointing straight up (z-axis) to align with two points.
 function rotation_to_points(p1, p2) = [-acos((p2[2] - p1[2]) / norm(p1 - p2)), 0, -atan2(p2[0] - p1[0], p2[1] - p1[1])];
 
+// Returns the normal vector for a plane given by three points.
 function normal_vector(p1, p2, p3) = cross(p2 - p1, p3 - p1);
+
+// Returns all edges for a set of faces (used to draw a polygon).
+function get_all_edges(faces, i = 0, r = []) = delete_cyclic_duplicates(let(f = faces[i]) i < len(faces) ? get_all_edges(faces, i + 1, concat(r, get_edges(f))) : r);
+function get_edges(face) = [for (i = [0 : len(face) - 1]) [face[i], face[(i + 1) % len(face)]]];
+	
+// Find connecting faces to vertex numbers v1 and v2.
+function find_connecting_faces(faces, v1, v2, i = 0, r = []) = let(f = faces[i]) i < len(faces) ? find_connecting_faces(faces, v1, v2, i + 1, is_element(f, v1) && is_element(f, v2) ? concat(r, [f]) : r) : r;
 
 
 ///////////////

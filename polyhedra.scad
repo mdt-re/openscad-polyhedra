@@ -81,6 +81,8 @@
 
 // Check preview for non-convex polyhedra with cut-outs.
 
+// Optimize draw_polyhedron_wire_frame by not using minkowski, but somehow round the cylinders.
+
 
 ///////////////
 // Constants //
@@ -115,8 +117,9 @@ function list_polyhedra() =
 // Draws the specified polyhedron.
 module draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
 {
-	// TODO: test if id exists.
-	//echo(str("ERROR: called draw_polyhedron for non-existing polyhedron ", id, "."));
+	// Check if polyhedron id exists.
+	assert(is_element(list_polyhedra(), id), str("draw_polyhedron: ", id, " is not a valid polyhedron."));
+	// Get polyhedron data.
 	vertices = polyhedron_vertices(id, n = n, m = m);
 	faces = polyhedron_faces(id, n = n, m = m);
 	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
@@ -127,6 +130,9 @@ module draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
 // Draws the specified polyhedron as a wire frame.
 module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
 {
+	// Check if polyhedron id exists.
+	assert(is_element(list_polyhedra(), id), str("draw_polyhedron_wire_frame: ", id, " is not a valid polyhedron."));
+	// Get polyhedron data.
 	vertices = polyhedron_vertices(id, n = n, m = m);
 	edges = polyhedron_edges(id, n = n, m = m);
 	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
@@ -135,14 +141,13 @@ module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
 		v1 = side * vertices[e[0]];
 		v2 = side * vertices[e[1]];
 		c = (v1 + v2) / 2;
-		echo(rotation_to_points(v1, v2));
 		h = norm(v1 - v2);
 		translate(c)
 			rotate(rotation_to_points(v1, v2))
 				minkowski()
 				{
 					cylinder(h = h, r = 0.000001, center = true);
-					sphere(r = t, $fn = 64);
+					sphere(r = t, $fn = 12);
 				}
 	}
 }
@@ -154,6 +159,7 @@ module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
 
 // Returns a list with the centers (3D coordinates) of all the faces of the polyhedron.
 function polyhedron_faces_center(id) =
+	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_center: ", id, " is not a valid polyhedron."))
 	let (
 		faces = polyhedron_faces(id),
 		vertices = polyhedron_vertices(id)
@@ -164,6 +170,7 @@ function polyhedron_faces_center(id) =
 // The rotation transforms an object from the xy-plane onto the face.
 // TODO: orientation can be choosen along many axes of the face (point to point, point to edge, etc.)
 function polyhedron_faces_orientation(id) = 
+	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_orientation: ", id, " is not a valid polyhedron."))
 	let (
 		faces = polyhedron_faces(id),
 		vertices = polyhedron_vertices(id),
@@ -174,6 +181,7 @@ function polyhedron_faces_orientation(id) =
 
 // Returns a list with the incircle radii of all the faces of the polyhedron.
 function polyhedron_faces_inradius(id) = 
+	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_inradius: ", id, " is not a valid polyhedron."))
 	let (
 		faces = polyhedron_faces(id)
 		//vertices = polyhedron_vertices(id),
@@ -1801,7 +1809,9 @@ function rotation_to_points(p1, p2) = [-acos((p2[2] - p1[2]) / norm(p1 - p2)), 0
 function normal_vector(p1, p2, p3) = cross(p2 - p1, p3 - p1);
 
 // Returns all edges for a set of faces (used to draw a polygon).
-function get_all_edges(faces, i = 0, r = []) = delete_cyclic_duplicates(let(f = faces[i]) i < len(faces) ? get_all_edges(faces, i + 1, concat(r, get_edges(f))) : r);
+function get_all_edges(faces, i = 0, r = []) = 
+	assert(is_list(faces), str("get_all_edges: faces ", faces, " is not a list"))
+	delete_cyclic_duplicates(let(f = faces[i]) i < len(faces) ? get_all_edges(faces, i + 1, concat(r, get_edges(f))) : r);
 function get_edges(face) = [for (i = [0 : len(face) - 1]) [face[i], face[(i + 1) % len(face)]]];
 	
 // Find connecting faces to vertex numbers v1 and v2.

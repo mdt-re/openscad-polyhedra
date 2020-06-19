@@ -81,8 +81,6 @@
 
 // Check preview for non-convex polyhedra with cut-outs.
 
-// Optimize draw_polyhedron_wire_frame by not using minkowski, but somehow round the cylinders.
-
 
 ///////////////
 // Constants //
@@ -127,7 +125,7 @@ module draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
 	polyhedron(vertices * side, faces, convexity);
 }
 
-// Draws the specified polyhedron as a wire frame.
+// Draws the specified polyhedron as a wire frame of all edges, with wire thickness (t).
 module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
 {
 	// Check if polyhedron id exists.
@@ -151,6 +149,46 @@ module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
 				}
 	}
 }
+
+// Draws the specified polyhedron as a set of polygon panels that cover the faces, with panel thickness (t).
+module draw_polyhedron_panels(id, a = 1, n = 5, m = 2, r = 0, t = 1)
+{
+	// Check if polyhedron id exists.
+	assert(is_element(list_polyhedra(), id), str("draw_polyhedron_wire_frame: ", id, " is not a valid polyhedron."));
+	// Get polyhedron data.
+	vertices = polyhedron_vertices(id);
+	faces = polyhedron_faces(id);
+	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
+	for (face = faces)
+	{
+		polygon_vertices = [for (v = face) side * vertices[v]];
+		polygon_panel(polygon_vertices, t);
+	}
+}
+
+// Creates the polygon panel for each of the polyhedron's faces.
+module polygon_panel(polygon_vertices, t = 1)
+{
+	// Calculate polygon center and orthonormal.
+	center = mean(polygon_vertices);
+	orthonormal = plane_orthonormal(polygon_vertices);
+	// Add vertices to make polygon 3D.
+	unit_center = center / norm(center);
+	orthonormal_points = [for (p = polygon_vertices) orthonormal];
+	polygon_points = concat(polygon_vertices - t / 2 * orthonormal_points, polygon_vertices + t / 2 * orthonormal_points);
+	// Create faces according to number of polygon vertices.
+	polygon_faces = right_prism_faces(len(polygon_vertices));
+	polyhedron(polygon_points, polygon_faces, 10);
+}
+
+// Gives the faces for a right prism, where the two main surfaces are simple n-gons.
+function right_prism_faces(n) = concat(
+	[
+		[for (k = [n - 1 : -1 : 0]) k],
+		[for (k = [n : 2 * n - 1]) k]
+	],
+	[for (k = [0 : n - 1]) [k % n, (k + 1) % n, n + (k + 1) % n, n + k % n]]
+);
 
 
 /////////////////////////

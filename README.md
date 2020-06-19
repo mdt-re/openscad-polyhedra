@@ -30,13 +30,14 @@ draw_polyhedron(random_element(list_polyhedra()), r = 10);
 For (semi-)regular polyhedra the circumradius intersects with all vertices, for more irregular shapes the circumradius (r) is defined as the smallest sphere that fully encloses the polyhedron. Other functions are:
 ```OpenSCAD
 draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
-polyhedron_faces_center(id)
-polyhedron_faces_orientation(id)
-polyhedron_faces_inradius(id)
+draw_polyhedron_panels(id, a = 1, n = 5, m = 2, r = 0, t = 1)
 polyhedron_vertices(id, n = 5, m = 2) 
 polyhedron_faces(id, n = 5, m = 2)
 polyhedron_edges(id, n = 5, m = 2)
 circumradius_factor(id, n = 5, m = 2)
+polyhedron_faces_center(id)
+polyhedron_faces_orientation(id)
+polyhedron_faces_inradius(id)
 ```
 ## Examples
 

@@ -50,6 +50,8 @@
  * | pentagonal_rotunda [J6]         |  17 |  35 |  20 |
  * | --- regular star polyhedra ---- | --------------- |
  * | small_stellated_dodecahedron    |  12 |  30 |  12 |
+ * | --- miscellaneous ------------- | --------------- |
+ * | dothedron                       |  10 |  16 |   8 |
  * |---------------------------------|-----------------|
  *
  * The following functions are available:
@@ -145,7 +147,9 @@ function list_polyhedra() =
 	// Johnson solids.
 	"square_pyramid", "pentagonal_pyramid", "triangular_copula", "square_copula", "pentagonal_copula", "pentagonal_rotunda",
 	// Regular star polyhedra.
-	"small_stellated_dodecahedron"
+	"small_stellated_dodecahedron",
+	// Miscellaneous.
+	"dothedron"
 ];
 
 // Draws the specified polyhedron.
@@ -305,6 +309,9 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 	// Regular star polyhedra.
 	: id == "small_stellated_dodecahedron" ?
 		VERTICES_SMALL_STELLATED_DODECAHEDRON
+	// Miscellaneous.
+	: id == "dothedron" ?
+		VERTICES_DOTHEDRON
 	:
 		undef
 );
@@ -390,6 +397,9 @@ function polyhedron_faces(id, n = 5, m = 2) =
 	// Regular star polyhedra.
 	: id == "small_stellated_dodecahedron" ?
 		FACES_SMALL_STELLATED_DODECAHEDRON
+	// Miscellaneous.
+	: id == "dothedron" ?
+		FACES_DOTHEDRON
 	:
 		undef
 );
@@ -478,6 +488,9 @@ function circumradius_factor(id, n = 5, m = 2) =
 	// Regular star polyhedra.
 	: id == "small_stellated_dodecahedron" ?
 		CIRCUMRADIUS_SMALL_STELLATED_DODECAHEDRON
+	// Miscellaneous.
+	: id == "dothedron" ?
+		CIRCUMRADIUS_DOTHEDRON
 	:
 		undef
 );
@@ -1826,6 +1839,28 @@ FACES_SMALL_STELLATED_DODECAHEDRON = [
 	[11, 30, 25], [11, 25, 26], [11, 26, 17], [11, 17, 18], [11, 18, 30]
 ];
 CIRCUMRADIUS_SMALL_STELLATED_DODECAHEDRON = PHI * sin(180 / 5);
+
+
+/////////////////////////
+// Data: Miscellaneous //
+/////////////////////////
+
+// Source: https://www.polytopia.eu/en/detailansicht?id=800246
+VERTICES_DOTHEDRON = [
+	[0.8036912096, 1.366853232, -0.3161695445], //0
+	[-0.7835491, -0.989079743, -0.09002763697], //1
+	[-1.073929152, 0.1731861157, 0.03096519118],  //2
+	[-0.6814578294, 0.5928904145, -0.6069368011],  //3
+	[-0.07516386551, -0.2315407561, -1.241399282],  //4
+	[0.7941225445, 0.1968498956, 0.6181029022],  //5
+	[-0.3578861241, 0.1246758496, 1.57179641],  //6
+	[1.148459313, -1.014397281, 0.03917599592],  //7
+]/1.74799;
+FACES_DOTHEDRON = [
+	[5, 0, 7], [0, 4, 7], [6, 5, 7], [6, 0, 5], [6, 7, 1], [1, 7, 4], [2, 6, 1], [0, 3 ,4],
+	[0, 6, 2, 3], [2, 1, 4, 3]
+];
+CIRCUMRADIUS_DOTHEDRON = 0.924971;
 
 
 /////////////////////////

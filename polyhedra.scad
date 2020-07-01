@@ -121,7 +121,6 @@ module draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
 	vertices = polyhedron_vertices(id, n = n, m = m);
 	faces = polyhedron_faces(id, n = n, m = m);
 	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
-	//number_vertices(vertices * side);
 	polyhedron(vertices * side, faces, convexity);
 }
 
@@ -145,7 +144,7 @@ module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
 				minkowski()
 				{
 					cylinder(h = h, r = 0.000001, center = true);
-					sphere(r = t, $fn = 12);
+					sphere(r = t / 2, $fn = 12);
 				}
 	}
 }
@@ -180,15 +179,6 @@ module polygon_panel(polygon_vertices, t = 1)
 	polygon_faces = right_prism_faces(len(polygon_vertices));
 	polyhedron(polygon_points, polygon_faces, 10);
 }
-
-// Gives the faces for a right prism, where the two main surfaces are simple n-gons.
-function right_prism_faces(n) = concat(
-	[
-		[for (k = [n - 1 : -1 : 0]) k],
-		[for (k = [n : 2 * n - 1]) k]
-	],
-	[for (k = [0 : n - 1]) [k % n, (k + 1) % n, n + (k + 1) % n, n + k % n]]
-);
 
 
 /////////////////////////
@@ -1840,7 +1830,7 @@ function line_intersection(v1, v2, v3, v4) = let (a = v1 - v2, b = v4 - v3, c = 
 function parallel_plane_distance(p1, p2) = let (n1 = plane_orthonormal(p1), n2 = plane_orthonormal(p2)) assert(norm(n1 - n2) < pow(10, -5)) abs((p1[0] - p2[0]) * n1);
 function plane_orthonormal(p) = let(v1 = p[0] -  mean(p), v2 = p[1] - mean(p), n = cross(v2, v1)) n / norm(n);
 	
-// Rotation for a shape pointing straight up (z-axis) to align with two points.
+// Rotation for a shape pointing straight up (along the z-axis) to align with two points.
 function rotation_to_points(p1, p2) = [-acos((p2[2] - p1[2]) / norm(p1 - p2)), 0, -atan2(p2[0] - p1[0], p2[1] - p1[1])];
 
 // Returns the normal vector for a plane given by three points.
@@ -1855,19 +1845,46 @@ function get_edges(face) = [for (i = [0 : len(face) - 1]) [face[i], face[(i + 1)
 // Find connecting faces to vertex numbers v1 and v2.
 function find_connecting_faces(faces, v1, v2, i = 0, r = []) = let(f = faces[i]) i < len(faces) ? find_connecting_faces(faces, v1, v2, i + 1, is_element(f, v1) && is_element(f, v2) ? concat(r, [f]) : r) : r;
 
+// Gives the faces for a right prism, where the two main surfaces are simple n-gons.
+function right_prism_faces(n) = concat(
+	[
+		[for (k = [n - 1 : -1 : 0]) k],
+		[for (k = [n : 2 * n - 1]) k]
+	],
+	[for (k = [0 : n - 1]) [k % n, (k + 1) % n, n + (k + 1) % n, n + k % n]]
+);
+
 
 ///////////////
 // Debugging //
 ///////////////
 
-// Draws a number to each polyhedral vertex for identification.
-module number_vertices(vertices)
+// Draws a number at each polyhedral vertex for identification and debugging.
+module number_vertices(id, a = 1, n = 5, m = 2, r = 0)
 {
-	scaled_vertices = [for (v = vertices) 1.15 * v];
-	for (i = [0 : len(scaled_vertices) - 1])
+	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
+	vertices = (side + side / 5) * polyhedron_vertices(id, n = n, m = m);
+	for (i = [0 : len(vertices) - 1])
 	{
 		color("Red")
-			translate(scaled_vertices[i])
-				text(text = str(i), halign = "center", valign = "center", size = 20);
+			translate(vertices[i])
+			linear_extrude(height = side / 20)		
+				text(text = str(i), halign = "center", valign = "center", size = side / 5);
+	};
+}
+
+// Draws a number at each polyhedral face for identification and debugging.
+module number_faces(id, a = 1, n = 5, m = 2, r = 0)
+{
+	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
+	faces = side * polyhedron_faces_center(id);
+	for (i = [0 : len(faces) - 1])
+	{
+		face_center = faces[i];
+		color("Blue")
+			translate(face_center)
+				rotate(rotation_to_points([0, 0, 0], face_center))
+					linear_extrude(height = side / 20)
+						text(str(i), halign = "center", valign = "center",  size = side / 5);
 	};
 }

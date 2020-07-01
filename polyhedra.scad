@@ -147,6 +147,8 @@ function list_polyhedra() =
 	"small_stellated_dodecahedron",
 	// Zonohedra.
 	"bilinski_dodecahedron", "elongated_dodecahedron", "rhombic_icosahedron", 
+	// Miscellaneous.
+	"dothedron"
 ];
 
 // Draws the specified polyhedron.
@@ -341,7 +343,10 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 	: id == "elongated_dodecahedron" ?
 		VERTICES_ELONGATED_DODECAHEDRON	
 	: id == "rhombic_icosahedron" ?
-		VERTICES_RHOMBIC_ICOSAHEDRON	
+		VERTICES_RHOMBIC_ICOSAHEDRON
+	// Miscellaneous.
+	: id == "dothedron" ?
+		VERTICES_DOTHEDRON
 	:
 		undef
 );
@@ -464,6 +469,9 @@ function polyhedron_faces(id, n = 5, m = 2) =
 		FACES_ELONGATED_DODECAHEDRON
 	: id == "rhombic_icosahedron" ?
 		FACES_RHOMBIC_ICOSAHEDRON
+	// Miscellaneous.
+	: id == "dothedron" ?
+		FACES_DOTHEDRON
 	:
 		undef
 );
@@ -579,6 +587,9 @@ function circumradius_factor(id, n = 5, m = 2) =
 		CIRCUMRADIUS_ELONGATED_DODECAHEDRON
 	: id == "rhombic_icosahedron" ?
 		CIRCUMRADIUS_RHOMBIC_ICOSAHEDRON
+	// Miscellaneous.
+	: id == "dothedron" ?
+		CIRCUMRADIUS_DOTHEDRON
 	:
 		undef
 );
@@ -596,6 +607,7 @@ include <data/johnson.scad>
 include <data/regular-ngon.scad>
 include <data/regular-star.scad>
 include <data/zonohedra.scad>
+include <data/misc.scad>
 
 
 /////////////////////////

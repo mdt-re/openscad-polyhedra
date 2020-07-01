@@ -144,7 +144,9 @@ function list_polyhedra() =
 	// Johnson solids.
 	"square_pyramid", "pentagonal_pyramid", "triangular_copula", "square_copula", "pentagonal_copula", "pentagonal_rotunda", "snub_disphenoid",
 	// Regular star polyhedra.
-	"small_stellated_dodecahedron"
+	"small_stellated_dodecahedron",
+	// Miscellaneous.
+	"dothedron"
 ];
 
 // Draws the specified polyhedron.
@@ -331,6 +333,9 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 	// Regular star polyhedra.
 	: id == "small_stellated_dodecahedron" ?
 		VERTICES_SMALL_STELLATED_DODECAHEDRON
+	// Miscellaneous.
+	: id == "dothedron" ?
+		VERTICES_DOTHEDRON
 	:
 		undef
 );
@@ -444,6 +449,9 @@ function polyhedron_faces(id, n = 5, m = 2) =
 	// Regular star polyhedra.
 	: id == "small_stellated_dodecahedron" ?
 		FACES_SMALL_STELLATED_DODECAHEDRON
+	// Miscellaneous.
+	: id == "dothedron" ?
+		FACES_DOTHEDRON
 	:
 		undef
 );
@@ -549,7 +557,10 @@ function circumradius_factor(id, n = 5, m = 2) =
 		CIRCUMRADIUS_SNUB_DISPHENOID
 	// Regular star polyhedra.
 	: id == "small_stellated_dodecahedron" ?
-		CIRCUMRADIUS_SMALL_STELLATED_DODECAHEDRON
+		CIRCUMRADIUS_SMALL_STELLATED_DODECAHEDRON	
+	// Miscellaneous.
+	: id == "dothedron" ?
+		CIRCUMRADIUS_DOTHEDRON
 	:
 		undef
 );
@@ -566,6 +577,7 @@ include <data/catalan.scad>
 include <data/johnson.scad>
 include <data/regular-ngon.scad>
 include <data/regular-star.scad>
+include <data/misc.scad>
 
 
 /////////////////////////

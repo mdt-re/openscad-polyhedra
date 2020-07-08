@@ -5,54 +5,52 @@
  *
  * Library for the drawing of polyhedra. Contains the following polyhedra:
  *
- * === Platonic Solids ===
- *  tetrahedron
- *  hexahedron
- *  octahedron
- *  dodecahedron
- *  icosahedron
- *
- * === Archimedean Solids ===
- *  truncated_tetrahedron
- *  cuboctahedron
- *  truncated_cube
- *  truncated_octahedron
- *  rhombicuboctahedron
- *  truncated_cuboctahedron
- *  snub_cube (MIRROR IMAGE TODO)
- *  icosidodecahedron
- *  truncated_dodecahedron
- *  truncated_icosahedron
- *  rhombicosidodecahedron
- *  truncated_icosidodecahedron
- *  snub_dodecahedron (MIRROR IMAGE TODO)
- * 
- * === Regular N-gon Polyhedra ===
- *  prism
- *  antiprism
- *  trapezohedron (TODO)
- *  star_prism (TODO)
- *  star_dipyramid (TODO)
- *
- * === Catalon Solids ===
- *  triakis_tetrahedron
- *  rhombic_dodecahedron
- *  triakis_octahedron
- *  tetrakis_hexahedron
- *  deltoidal_icositetrahedron
- *  rhombic_triacontahedron
- *
- * === Johnson Solids ===
- *  square pyramid [J1]
- *  pentagonal_pyramid [J2]
- *  triangular_copula [J3]
- *  square_copula [J4]
- *  pentagonal_copula [J5]
- *  pentagonal_rotunda [J6]
- *  
- * === Regular Star Polyhedra ===
- *  small_stellated_dodecahedron
- *
+ * |---------------------------------|-----------------|
+ * | id                              |  F  |  E  |  V  |
+ * |---------------------------------|-----------------|
+ * | --- platonic solids ------------| --------------- |
+ * | tetrahedron                     |   4 |   6 |   4 | 
+ * | hexahedron                      |   6 |  12 |   8 |
+ * | octahedron                      |   8 |  12 |   6 |
+ * | dodecahedron                    |  12 |  30 |  20 |
+ * | icosahedron                     |  20 |  30 |  12 |
+ * | --- archimedean solids -------- | --------------- |
+ * | truncated_tetrahedron           |   8 |  18 |  12 |
+ * | cuboctahedron                   |  14 |  24 |  12 |
+ * | truncated_cube                  |  14 |  36 |  24 |
+ * | truncated_octahedron            |  14 |  36 |  24 |
+ * | rhombicuboctahedron             |  26 |  48 |  24 |
+ * | truncated_cuboctahedron         |  26 |  72 |  48 |
+ * | snub_cube                       |  38 |  60 |  24 |
+ * | icosidodecahedron               |  32 |  60 |  30 |
+ * | truncated_dodecahedron          |  32 |  90 |  60 |
+ * | truncated_icosahedron           |  32 |  90 |  60 |
+ * | rhombicosidodecahedron          |  62 | 120 |  60 |
+ * | truncated_icosidodecahedron     |  62 | 120 | 120 |
+ * | snub_dodecahedron               |  92 | 150 |  60 |
+ * | --- regular n-gon polyhedra --- | --------------- |
+ * | prism                           | 2+n |  3n |  2n |
+ * | antiprism                       |2n+2 |  4n |  2n |
+ * | trapezohedron (TODO)            |  2n |  4n | 2n+2|
+ * | star_prism (TODO)               |     |     |     |
+ * | star_dipyramid (TODO)           |     |     |     |
+ * | --- catalan solids ------------ | --------------- |
+ * | triakis_tetrahedron             |  12 |  18 |   8 |
+ * | rhombic_dodecahedron            |  12 |  24 |  14 |
+ * | triakis_octahedron              |  24 |  36 |  14 |
+ * | tetrakis_hexahedron             |  24 |  36 |  14 |
+ * | deltoidal_icositetrahedron      |  24 |  48 |  26 |
+ * | rhombic_triacontahedron         |  30 |  60 |  32 |
+ * | --- johnson solids ------------ | --------------- |
+ * | square pyramid [J1]             |   5 |   8 |   5 |
+ * | pentagonal_pyramid [J2]         |   6 |  10 |   6 |
+ * | triangular_copula [J3]          |   8 |  15 |   9 |
+ * | square_copula [J4]              |  10 |  20 |  12 |
+ * | pentagonal_copula [J5]          |  12 |  25 |  15 |
+ * | pentagonal_rotunda [J6]         |  17 |  35 |  20 |
+ * | --- regular star polyhedra ---- | --------------- |
+ * | small_stellated_dodecahedron    |  12 |  30 |  12 |
+ * |---------------------------------|-----------------|
  *
  * Short usage documentation:
  *
@@ -1846,7 +1844,18 @@ function sum(v) = [for (e = v) 1] * v;
 function mean(v) = sum(v) / len(v);
 
 // Determines whether elem is part of vector.
-function is_element(v, elem, i = 0) = let (e = v[i]) i < len(v) ? e == elem ? true : is_element(v, elem, i + 1) : false;
+function is_element(v, elem) = search([elem], v, num_returns_per_match = 1) != [[]];
+
+// Returns the other element in a vector of length two.
+function other_element(v, elem) =
+	assert(len(v) == 2, str("other_element: v ", v, " does not have two elements"))
+	v[0] == elem ? v[1] : v[0];
+
+// Returns a vector with the indexes from elements removed.
+function vector_remove(v, elements) = [for (i = [0 : len(v) - 1]) if (!search(i, elements)) v[i]];
+
+// Flattens a vector with two dimensions.
+function flatten(v) = [for (a = v) for (b = a) b];
 
 // Cycles the elements of v forwards once (first element goes to last position).
 function cycle(v) = [for (i = [0 : len(v) - 1]) v[(i + 1) % len(v)]];
@@ -1889,6 +1898,21 @@ function get_edges(face) = [for (i = [0 : len(face) - 1]) [face[i], face[(i + 1)
 // Find connecting faces to vertex numbers v1 and v2.
 function find_connecting_faces(faces, v1, v2, i = 0, r = []) = let(f = faces[i]) i < len(faces) ? find_connecting_faces(faces, v1, v2, i + 1, is_element(f, v1) && is_element(f, v2) ? concat(r, [f]) : r) : r;
 
+// Find connecting vertices to specified vertex number (i.e. connected via an edge).
+function find_connecting_vertices(faces, edges, v) = let(
+		ce = [for (e = edges) if (is_element(e, v)) e],
+		cv = [for (c = flatten(ce)) if (c != v) c],
+		mf = [for (f = find_meeting_faces(faces, v)) [for (mv = f) if (is_element(cv, mv)) mv]] 
+	) make_edges_cyclic(mf);
+
+function find_meeting_faces(faces, v) = [for (f = faces) if (is_element(f, v)) f];
+
+function make_edges_cyclic(edges, result = []) = let(
+		last_v = len(result) == 0 ? edges[0][0] : result[len(result) - 1],
+		next_v = [for (i = [0 : len(edges) - 1]) if (is_element(edges[i], last_v)) [other_element(edges[i], last_v), i]][0],
+		edges_reduced = vector_remove(edges, [next_v[1]])
+	) len(edges_reduced) > 0 ? make_edges_cyclic(edges_reduced, concat(result, next_v[0])) : concat(result, next_v[0]);
+
 // Gives the faces for a right prism, where the two main surfaces are simple n-gons.
 function right_prism_faces(n) = concat(
 	[
@@ -1928,6 +1952,23 @@ module number_faces(id, a = 1, n = 5, m = 2, r = 0)
 		color("Blue")
 			translate(face_center)
 				rotate(rotation_to_points([0, 0, 0], face_center))
+					linear_extrude(height = side / 20)
+						text(str(i), halign = "center", valign = "center",  size = side / 5);
+	};
+}
+
+// Draws a number at each polyhedral edge for identification and debugging.
+module number_edges(id, a = 1, n = 5, m = 2, r = 0)
+{
+	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
+	edges = polyhedron_edges(id, n = n, m = m);
+	vertices = side * polyhedron_vertices(id, n = n, m = m);
+	for (i = [0 : len(edges) - 1])
+	{
+		edge_center = (vertices[edges[i][0]] + vertices[edges[i][1]]) / 2;
+		color("Green")
+			translate(edge_center)
+				rotate(rotation_to_points([0, 0, 0], edge_center))
 					linear_extrude(height = side / 20)
 						text(str(i), halign = "center", valign = "center",  size = side / 5);
 	};

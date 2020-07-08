@@ -39,9 +39,11 @@ polyhedron_faces_center(id)
 polyhedron_faces_orientation(id)
 polyhedron_faces_inradius(id)
 ```
+
+
 ## Examples
 
-See the [examples](examples) folder for more detailed explanations of the functionality.
+See the [examples](examples) folder for more detailed explanations of the functionality. This folder also contains some interesting examples which can be 3d printed.
 
 
 ## Bugs & Feedback

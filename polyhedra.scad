@@ -43,10 +43,12 @@
  *  rhombic_triacontahedron
  *
  * === Johnson Solids ===
- *  triangular_copula
- *  square_copula
- *  pentagonal_copula
- *  pentagonal_rotunda
+ *  square pyramid [J1]
+ *  pentagonal_pyramid [J2]
+ *  triangular_copula [J3]
+ *  square_copula [J4]
+ *  pentagonal_copula [J5]
+ *  pentagonal_rotunda [J6]
  *  
  * === Regular Star Polyhedra ===
  *  small_stellated_dodecahedron
@@ -107,7 +109,7 @@ function list_polyhedra() =
 	// Catalan solids.
 	"triakis_tetrahedron", "rhombic_dodecahedron", "triakis_octahedron", "tetrakis_hexahedron", "deltoidal_icositetrahedron", "rhombic_triacontahedron",
 	// Johnson solids.
-	"triangular_copula", "square_copula", "pentagonal_copula", "pentagonal_rotunda",
+	"square_pyramid", "pentagonal_pyramid", "triangular_copula", "square_copula", "pentagonal_copula", "pentagonal_rotunda",
 	// Regular star polyhedra.
 	"small_stellated_dodecahedron"
 ];
@@ -292,6 +294,10 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 	: id == "rhombic_triacontahedron" ?	
 		VERTICES_RHOMBIC_TRIACONTAHEDRON
 	// Johnson solids.
+	: id == "square_pyramid" ?
+		VERTICES_SQUARE_PYRAMID
+	: id == "pentagonal_pyramid" ?
+		VERTICES_PENTAGONAL_PYRAMID
 	: id == "triangular_copula" ?
 		VERTICES_TRIANGULAR_COPULA
 	: id == "square_copula" ?
@@ -373,6 +379,10 @@ function polyhedron_faces(id, n = 5, m = 2) =
 	: id == "rhombic_triacontahedron" ?	
 		FACES_RHOMBIC_TRIACONTAHEDRON
 	// Johnson solids.
+	: id == "square_pyramid" ?
+		FACES_SQUARE_PYRAMID
+	: id == "pentagonal_pyramid" ?
+		FACES_PENTAGONAL_PYRAMID
 	: id == "triangular_copula" ?
 		FACES_TRIANGULAR_COPULA
 	: id == "square_copula" ?
@@ -457,6 +467,10 @@ function circumradius_factor(id, n = 5, m = 2) =
 	: id == "rhombic_triacontahedron" ?	
 		CIRCUMRADIUS_RHOMBIC_TRIACONTAHEDRON
 	// Johnson solids.
+	: id == "square_pyramid" ?
+		CIRCUMRADIUS_SQUARE_PYRAMID
+	: id == "pentagonal_pyramid" ?
+		CIRCUMRADIUS_PENTAGONAL_PYRAMID
 	: id == "triangular_copula" ?
 		CIRCUMRADIUS_TRIANGULAR_COPULA
 	: id == "square_copula" ?
@@ -1640,6 +1654,33 @@ CIRCUMRADIUS_RHOMBIC_TRIACONTAHEDRON = PHI;
 // Data: Johnson Solids //
 //////////////////////////
 
+// Source: https://en.wikipedia.org/wiki/Square_pyramid
+VERTICES_SQUARE_PYRAMID = [
+	[+1/2, +1/2, 0],
+	[+1/2, -1/2, 0],
+	[-1/2, +1/2, 0],
+	[-1/2, -1/2, 0],
+	[0, 0, 1/sqrt(2)]
+];
+FACES_SQUARE_PYRAMID = [
+	[0, 1, 4], [1, 3, 4], [3, 2, 4], [2, 0, 4], [3, 1, 0, 2]
+];
+CIRCUMRADIUS_SQUARE_PYRAMID = 1/sqrt(2);
+
+// Source: https://en.wikipedia.org/wiki/Pentagonal_pyramid
+VERTICES_PENTAGONAL_PYRAMID = [
+	[sqrt(1/2 + 1/(2 * sqrt(5))), 0, 0],
+	[1/2 * sqrt((5 - sqrt(5))/10), (-1-sqrt(5))/4, 0],
+	[1/2 * sqrt((5 - sqrt(5))/10), (+1+sqrt(5))/4, 0],
+	[-sqrt(1/4 + 1/(2 * sqrt(5))), -1/2, 0],
+	[-sqrt(1/4 + 1/(2 * sqrt(5))), +1/2, 0],
+	[0, 0, sqrt((5 - sqrt(5)) / 10)]
+];
+FACES_PENTAGONAL_PYRAMID = [
+	[0, 1, 5], [1, 3, 5], [3, 4, 5], [4, 2, 5], [2, 0, 5], [0, 2, 4, 3, 1]
+];
+CIRCUMRADIUS_PENTAGONAL_PYRAMID = sqrt(1/2 + 1/(2 * sqrt(5)));
+
 //Source: https://en.wikipedia.org/wiki/Triangular_cupola
 VERTICES_TRIANGULAR_COPULA = [
 	[+1/2, +sqrt(3)/2, 0],  //0
@@ -1831,7 +1872,10 @@ function parallel_plane_distance(p1, p2) = let (n1 = plane_orthonormal(p1), n2 =
 function plane_orthonormal(p) = let(v1 = p[0] -  mean(p), v2 = p[1] - mean(p), n = cross(v2, v1)) n / norm(n);
 	
 // Rotation for a shape pointing straight up (along the z-axis) to align with two points.
-function rotation_to_points(p1, p2) = [-acos((p2[2] - p1[2]) / norm(p1 - p2)), 0, -atan2(p2[0] - p1[0], p2[1] - p1[1])];
+function rotation_to_points(p1, p2) = let(
+	rx = norm(p1 - p2) != 0 ? -acos((p2[2] - p1[2]) / norm(p1 - p2)) : 0,
+	rz = -atan2(p2[0] - p1[0], p2[1] - p1[1])
+	) [rx, 0, rz];
 
 // Returns the normal vector for a plane given by three points.
 function normal_vector(p1, p2, p3) = cross(p2 - p1, p3 - p1);

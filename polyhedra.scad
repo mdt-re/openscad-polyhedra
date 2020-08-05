@@ -1844,7 +1844,7 @@ function sum(v) = [for (e = v) 1] * v;
 function mean(v) = sum(v) / len(v);
 
 // Determines whether elem is part of vector.
-function is_element(v, elem) = search([elem], v, num_returns_per_match = 1) != [[]];
+function is_element(v, elem) = assert(is_list(v), str("is_element: v ", v, " is not a list")) search([elem], v, num_returns_per_match = 1) != [[]];
 
 // Returns the other element in a vector of length two.
 function other_element(v, elem) =
@@ -1888,6 +1888,7 @@ function rotation_to_points(p1, p2) = let(
 
 // Returns the normal vector for a plane given by three points.
 function normal_vector(p1, p2, p3) = cross(p2 - p1, p3 - p1);
+function face_normal(vertices, face) = let(points = [for (v = face) vertices[v]]) normal_vector(points[0], points[1], points[2]);
 
 // Returns all edges for a set of faces (used to draw a polygon).
 function get_all_edges(faces, i = 0, r = []) = 
@@ -1921,6 +1922,40 @@ function right_prism_faces(n) = concat(
 	],
 	[for (k = [0 : n - 1]) [k % n, (k + 1) % n, n + (k + 1) % n, n + k % n]]
 );
+	
+// Rotates a vector (v) around axis (axis) by an angle (a).
+// Uses the Rodrigues rotation formula https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula.
+function rotate_vector(v, a, axis) = v * cos(a) + cross(axis, v) * sin(a) + axis * (axis * v) * (1 - cos(a));
+
+// Gives the rotation matrix corresponding to the rotation in the XYZ format for the OpenSCAD rotate() function.
+// Uses https://en.wikipedia.org/wiki/Euler_angles, in particular Tait-Bryan angles: Z1 Y2 X3 from the table.
+function rotation_matrix(rot) = let
+(
+	c1 = cos(rot[2]), s1 = sin(rot[2]),
+	c2 = cos(rot[1]), s2 = sin(rot[1]),
+	c3 = cos(rot[0]), s3 = sin(rot[0])
+)[
+	[c1*c2,	c1*s2*s3 - c3*s1,	s1*s3 + c1*c3*s2],
+	[c2*s1,	c1*c3 + s1*s2*s3,	c3*s1*s2 - c1*s3], 
+	[-s2,	c2*s3,				c3*c3]
+];
+
+// Returns the dihedral angle between two polyhedron faces.
+// This is the angle between f1 and f2 in the edge (f1-f2).
+function dihedral_angle(vertices, f1, f2) = let
+(
+	n1 = face_normal(vertices, f1),
+	n2 = face_normal(vertices, f2)
+) acos(-n1 * n2 / (norm(n1) * norm(n2)));
+
+// Return the partial dihedral angle between the two polyhedron faces (f1 and f2 are lists of vertex numbers).
+// The is the angle between f1, the edge (f1-f2) and the center of the polyhedron.
+function partial_dihedral_angle(vertices, f1, f2) = let
+(
+	n1 = face_normal(vertices, f1),
+	shared_v = [for (v = f1) if (is_element(f2, v)) v],
+	nc = normal_vector([0, 0, 0], vertices[shared_v[0]], vertices[shared_v[1]])
+) acos(n1 * nc / (norm(n1) * norm(nc)));
 
 
 ///////////////

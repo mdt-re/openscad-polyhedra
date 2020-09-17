@@ -14,12 +14,12 @@ use <../polyhedra.scad>;
 //////////////
 
 // Polyhedron for which to construct connectors, the radius specifies where the center of the tubes meet.
-poly = "tetrakis_hexahedron";
+poly = "tetrahedron";
 poly_n = 5;
 poly_m = 2;
 radius = 100;
 // Render accuracy: use a high value (>= 32) when rendering for a 3d print.
-$fn = 12;
+$fn = 48;
 // Inner radius of the tube.
 d_inner = 6;
 // Outer radius of the tube.
@@ -27,9 +27,9 @@ d_outer = 8;
 // Depth to which the connector pin inserts into the tube, similar to inner radius of the tube should work fine.
 pin_depth = 6;
 // Render all the pins to view the model [disable to create an stl file for 3d printing].
-render_pins = true;
+render_pins = false;
 // Render all the tubes to view the model [disable to create an stl file for 3d printing].
-render_tubes = true;
+render_tubes = false;
 // Geometries may require multiple different pins, this renders a single pin for 3d printing, first pin index equals zero, render_pins and render_tubes must be deactivated.
 render_pin_nr = 0;
 // Render supports for 3d printing to enhance sticking of these small parts to the print bed.
@@ -124,10 +124,12 @@ module round_pin(d_in, d_out, h_in, h_out)
 			cylinder(d = d_out, h = h_out);
 		// Add a cylinder which fits into the tube, i.e. has the same inner raius.
 		// Do this using a threaded rod which makes fitting into the tube easier.
-		{
-			translate([0, 0, -h_out - h_in / 2 + RENDER_EPS])
+		translate([0, 0, -h_out - h_in / 2 + RENDER_EPS])
+			difference()
+			{
 				threaded_rod(d = d_in, l = h_in);
-		}
+				cylinder(d = max(d_in - 4, 0), h = h_in + 2 * RENDER_EPS, center = true);
+			}
 	}
 }
 
@@ -169,7 +171,7 @@ module single_connector_pin(id, pin_nr, a = 1, n = 5, m = 2, r = 0, d_in = 1, d_
 	v = search(vertex_type, vertex_types)[0];
 	// Get vertex coordinate and determine connected vertices, then find the mininum connection angle.
 	p = side * vertices[v];
-	connecting_v = find_connecting_vertices(faces, edges, v);
+	connecting_v = vertices_connected_to_vertex(edges, faces, v);
 	connect_to = [for (c = connecting_v) side * vertices[c]];
 	min_angle = min(get_vertex_angles(v, vertices, faces, edges));
 	// Reconstruct angle to rotate the pin facing up in the z-direction for 3d printing.
@@ -193,7 +195,7 @@ module connector_pins(id, a = 1, n = 5, m = 2, r = 0, d_in = 1, d_out = 2, h_in 
 	{
 		// Get vertex coordinate and determine connected vertices, then find the mininum connection angle.
 		p = side * vertices[v];
-		connecting_v = find_connecting_vertices(faces, edges, v);
+		connecting_v = vertices_connected_to_vertex(edges, faces, v);
 		connect_to = [for (c = connecting_v) side * vertices[c]];
 		min_angle = min(get_vertex_angles(v, vertices, faces, edges));
 		//echo(str("v = ", v, "; connect_to = ", connecting_v, "; angles = ", get_vertex_angles(v, vertices, faces, edges)));
@@ -233,7 +235,7 @@ module connector_tubes(id, a = 1, n = 5, m = 5, r = 0, d_in = 1, d_out = 2, h_in
 }
 
 // Returns vertex types for each vertex: just the number of connections.
-function get_vertex_types(vertices, faces, edges) = [for (v = [0 : len(vertices) - 1]) len(find_connecting_vertices(faces, edges, v))];
+function get_vertex_types(vertices, faces, edges) = [for (v = [0 : len(vertices) - 1]) len(vertices_connected_to_vertex(edges, faces, v))];
 // Returns a list of vertex type and the number of occurences in the polyhedron.
 function get_vertex_types_list(types) = let(
 		types_unique = delete_duplicates(types)
@@ -242,7 +244,7 @@ function get_vertex_types_list(types) = let(
 // Returns a list of all angles between the edges that meet in this vertex.
 function get_vertex_angles(v, vertices, faces, edges) = let(
 		p = vertices[v],
-		connecting_v = find_connecting_vertices(faces, edges, v),
+		connecting_v = vertices_connected_to_vertex(edges, faces, v),
 		connect_to = [for (c = connecting_v) vertices[c]]
 	) [for (vc = [0 : len(connect_to) - 1]) acos((connect_to[vc] - p) * (connect_to[(vc + 1) % len(connect_to)] - p) / (norm(connect_to[vc] - p) * norm(connect_to[(vc + 1) % len(connect_to)] - p)))];
 
@@ -257,8 +259,8 @@ module threaded_rod(d, l)
 }
 
 // Calculate tube lengths.
-function calculate_tube_lengths(side, d_out, vertices, faces, edges) = [for (e = edges) calculate_tube_length(side, d_out, vertices, faces, e[0], e[1])];
-function calculate_tube_length(side, d_out, vertices, faces, v1, v2) = let(
+function calculate_tube_lengths(side, d_out, vertices, faces, edges) = [for (e = edges) calculate_tube_length(side, d_out, vertices, faces, edges, e[0], e[1])];
+function calculate_tube_length(side, d_out, vertices, faces, edges, v1, v2) = let(
 		p1 = side * vertices[v1],
 		p2 = side * vertices[v2],
 		min_angle1 = min(get_vertex_angles(v1, vertices, faces, edges)),

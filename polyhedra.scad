@@ -52,6 +52,40 @@
  * | small_stellated_dodecahedron    |  12 |  30 |  12 |
  * |---------------------------------|-----------------|
  *
+ * The following functions are available:
+ * |---------------------------------|---------------------------------------------------|
+ * | function                        | description                                       |
+ * |---------------------------------|---------------------------------------------------|
+ * | list_polyhedra                  | lists all available polyhedra                     |
+ * | draw_polyhedron                 | draws the given polyhedron                        |
+ * | draw_polyhedron_wire_frame      | draws a wire frame for the specified polyhedron   |
+ * | draw_polyhedron_panels          | draws panels at the specified polyhedron faces    |
+ * | --- properties ---------------- | ------------------------------------------------- |
+ * | polyhedron_vertices             | returns the polyhedron vertex coordinates         |
+ * | polyhedron_faces                | returns the vertex numbers that form the faces    |
+ * | polyhedron_edges                | returns the vertex numbers that form the edges    |
+ * | circumradius_factor             | returns the circumradius factor xi (R = xi * a)   |
+ * | --- topology ------------------ | ------------------------------------------------- |
+ * | vertices_connected_to_vertex    | returns all vertices connected to vertex (v. edge)| 
+ * | edges_connected_to_vertex       | returns all edges connected to vertex             | 
+ * | edges_connected_to_edge         | returns all edges connected to edge (v. vertex)   | 
+ * | edges_connected_to_face         | returns all edges connected to face               | 
+ * | faces_connected_to_vertex       | returns all faces connected to vertex             | 
+ * | faces_connected_to_edge         | returns all faces connected to edge               | 
+ * | faces_connected_to_face         | returns all faces connected to face (v. edge)     |
+ * | get_all_edges                   | returns all edges of a polyhedra given its faces  |
+ * | --- geometry ------------------ | ------------------------------------------------- |
+ * | polyhedron_faces_center         | returns the coordinates of faces' centers         |
+ * | polyhedron_faces_orientation    | returns the orientation to xy-plane of the faces  |
+ * | polyhedron_faces_inradius       | returns the inner radius of the faces             |
+ * | dihedral_angle                  | returns the dihedral angle between face-edge-face |
+ * | partial_dihedral_angle          | returns the angle between face-edge-center        |
+ * | --- debugging ----------------- | ------------------------------------------------- | 
+ * | number_vertices                 | display numbers at all polyhedron vertices        |
+ * | number_faces                    | display numbers at all polyhedron faces           |
+ * | number_edges                    | display numbers at all polyhedron edges           |
+ * |---------------------------------|---------------------------------------------------|
+ * 
  * Short usage documentation:
  *
  *  draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
@@ -80,6 +114,8 @@
 // Implement height for several polyhedra categories: prism, antiprism.
 
 // Check preview for non-convex polyhedra with cut-outs.
+
+// Properly test topology functions.
 
 
 ///////////////
@@ -179,46 +215,6 @@ module polygon_panel(polygon_vertices, t = 1)
 	polygon_faces = right_prism_faces(len(polygon_vertices));
 	polyhedron(polygon_points, polygon_faces, 10);
 }
-
-
-/////////////////////////
-// Polyhedron Geometry //
-/////////////////////////
-
-// Returns a list with the centers (3D coordinates) of all the faces of the polyhedron.
-function polyhedron_faces_center(id) =
-	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_center: ", id, " is not a valid polyhedron."))
-	let (
-		faces = polyhedron_faces(id),
-		vertices = polyhedron_vertices(id)
-	)
-	[for (f = faces) mean([for (v = f) vertices[v]])];
-
-// Returns a list of rotations [angle, rot_vector] for all the faces of the polyhedron.
-// The rotation transforms an object from the xy-plane onto the face.
-// TODO: orientation can be choosen along many axes of the face (point to point, point to edge, etc.)
-function polyhedron_faces_orientation(id) = 
-	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_orientation: ", id, " is not a valid polyhedron."))
-	let (
-		faces = polyhedron_faces(id),
-		vertices = polyhedron_vertices(id),
-		normals = [for (f = faces) normal_vector(vertices[f[0]], vertices[f[1]], vertices[f[2]])],
-		normal_xy = [0, 0, -1]
-	)
-	[for (n = normals) [-acos(n * normal_xy / norm(n)), cross(n, normal_xy)]];
-
-// Returns a list with the incircle radii of all the faces of the polyhedron.
-function polyhedron_faces_inradius(id) = 
-	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_inradius: ", id, " is not a valid polyhedron."))
-	let (
-		faces = polyhedron_faces(id)
-		//vertices = polyhedron_vertices(id),
-		//face_vertices = [for (f = faces) [for(v = f) vertices[v]]]
-	)
-	//[for (f = face_vertices) norm((f[0] + f[1]) / 2 - mean(f))];
-	// TODO: this works for regular polyhedra, change if we have irregular ones.
-	// This is faster for regular ones.
-	[for (f = faces) 1 / tan(180 / len(f)) / 2];
 
 
 ///////////////////////////
@@ -1830,6 +1826,112 @@ FACES_SMALL_STELLATED_DODECAHEDRON = [
 CIRCUMRADIUS_SMALL_STELLATED_DODECAHEDRON = PHI * sin(180 / 5);
 
 
+/////////////////////////
+// Polyhedron Topology //
+/////////////////////////
+
+// Returns all vertices connected to vertex v (via an edge).
+function vertices_connected_to_vertex(edges, faces, v) = let(
+		ce = edges_connected_to_vertex(edges, v),
+		cv = [for (c = flatten(ce)) if (c != v) c],
+		mf = [for (f = find_meeting_faces(faces, v)) [for (mv = f) if (is_element(cv, mv)) mv]] 
+	) make_edges_cyclic(mf);
+
+// Helper function for vertices_connected_to_vertex.	
+function find_meeting_faces(faces, v) = [for (f = faces) if (is_element(f, v)) f];
+
+// Helper function for vertices_connected_to_vertex.	
+function make_edges_cyclic(edges, result = []) = let(
+		last_v = len(result) == 0 ? edges[0][0] : result[len(result) - 1],
+		next_v = [for (i = [0 : len(edges) - 1]) if (is_element(edges[i], last_v)) [other_element(edges[i], last_v), i]][0],
+		edges_reduced = vector_remove(edges, [next_v[1]])
+	) len(edges_reduced) > 0 ? make_edges_cyclic(edges_reduced, concat(result, next_v[0])) : concat(result, next_v[0]);
+
+// Note that the vertices connected to an edge or a face are literally the edge
+// and the face, so that no functions are needed.
+
+// Returns all polyhedron edges connected to vertex v.
+function edges_connected_to_vertex(edges, v) = [for (e = edges) if (is_element(e, v)) e];
+	
+// Returns all polyhedron edges connected to edge e (via a vertex).
+function edges_connected_to_edge(edges, e) = [for (ce = concat(edges_connected_to_vertex(edges, e[0]), edges_connected_to_vertex(edges, e[1]))) if (ce != e) ce];
+	
+// Returns all polyhedron edges connected to face f.
+function edges_connected_to_face(edges, f) = [for (e = edges) if (is_element(f, e[0]) && is_element(f, e[1])) e];
+	
+// Returns all polyhedron faces connected to vertex v.
+function faces_connected_to_vertex(faces, v) = [for (f = faces) if (is_element(f, v)) f];
+
+// Returns all polyhedron faces connected to edge e.
+function faces_connected_to_edge(faces, e) = [for (f = faces) if (is_element(f, e[0]) && is_element(f, e[1])) f];
+
+// Returns all polyhedron faces connected to face f (via an edge).
+function faces_connected_to_face(edges, faces, f) = [for (cf = [for (e = edges_connected_to_face(edges, f)) each faces_connected_to_edge(faces, e)]) if (cf != f) cf];
+	
+// Returns all edges of a polyhedra given its faces.
+function get_all_edges(faces, i = 0, r = []) = 
+	assert(is_list(faces), str("get_all_edges: faces ", faces, " is not a list"))
+	delete_cyclic_duplicates(let(f = faces[i]) i < len(faces) ? get_all_edges(faces, i + 1, concat(r, get_edges(f))) : r);
+function get_edges(face) = [for (i = [0 : len(face) - 1]) [face[i], face[(i + 1) % len(face)]]];
+
+
+/////////////////////////
+// Polyhedron Geometry //
+/////////////////////////
+
+// Returns a list with the centers (3D coordinates) of all the faces of the polyhedron.
+function polyhedron_faces_center(id) =
+	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_center: ", id, " is not a valid polyhedron."))
+	let (
+		faces = polyhedron_faces(id),
+		vertices = polyhedron_vertices(id)
+	)
+	[for (f = faces) mean([for (v = f) vertices[v]])];
+
+// Returns a list of rotations [angle, rot_vector] for all the faces of the polyhedron.
+// The rotation transforms an object from the xy-plane onto the face.
+// TODO: orientation can be choosen along many axes of the face (point to point, point to edge, etc.)
+function polyhedron_faces_orientation(id) = 
+	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_orientation: ", id, " is not a valid polyhedron."))
+	let (
+		faces = polyhedron_faces(id),
+		vertices = polyhedron_vertices(id),
+		normals = [for (f = faces) normal_vector(vertices[f[0]], vertices[f[1]], vertices[f[2]])],
+		normal_xy = [0, 0, -1]
+	)
+	[for (n = normals) [-acos(n * normal_xy / norm(n)), cross(n, normal_xy)]];
+
+// Returns a list with the incircle radii of all the faces of the polyhedron.
+function polyhedron_faces_inradius(id) = 
+	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_inradius: ", id, " is not a valid polyhedron."))
+	let (
+		faces = polyhedron_faces(id)
+		//vertices = polyhedron_vertices(id),
+		//face_vertices = [for (f = faces) [for(v = f) vertices[v]]]
+	)
+	//[for (f = face_vertices) norm((f[0] + f[1]) / 2 - mean(f))];
+	// TODO: this works for regular polyhedra, change if we have irregular ones.
+	// This is faster for regular ones.
+	[for (f = faces) 1 / tan(180 / len(f)) / 2];
+		
+// Returns the dihedral angle between two polyhedron faces (f1 and f2 are lists of vertex numbers).
+// This is the angle between f1, the edge (f1-f2) and f2.
+function dihedral_angle(vertices, f1, f2) = let
+(
+	n1 = face_normal(vertices, f1),
+	n2 = face_normal(vertices, f2)
+) acos(-n1 * n2 / (norm(n1) * norm(n2)));
+
+// Return the partial dihedral angle between the two polyhedron faces (f1 and f2 are lists of vertex numbers).
+// The is the angle between f1, the edge (f1-f2) and the center of the polyhedron.
+function partial_dihedral_angle(vertices, f1, f2) = let
+(
+	n1 = face_normal(vertices, f1),
+	shared_v = [for (v = f1) if (is_element(f2, v)) v],
+	nc = normal_vector([0, 0, 0], vertices[shared_v[0]], vertices[shared_v[1]])
+) acos(n1 * nc / (norm(n1) * norm(nc)));
+
+
 /////////////////
 // Mathematics //
 /////////////////
@@ -1843,7 +1945,7 @@ function sum(v) = [for (e = v) 1] * v;
 // Calculates the mean of a vector (elements of the vector may also be vectors).
 function mean(v) = sum(v) / len(v);
 
-// Determines whether elem is part of vector.
+// Determines whether elem is part of vector (v).
 function is_element(v, elem) = assert(is_list(v), str("is_element: v ", v, " is not a list")) search([elem], v, num_returns_per_match = 1) != [[]];
 
 // Returns the other element in a vector of length two.
@@ -1868,6 +1970,23 @@ function delete_duplicates(v, i = 0, r = []) = let(e = v[i]) i < len(v) ? delete
 // TODO: fix cyclic elements.
 function delete_cyclic_duplicates(v, i = 0, r = []) = let(e = v[i]) i < len(v) ? delete_cyclic_duplicates(v, i + 1, (is_element(r, e) || is_element(r, cycle(e)) ? r : concat(r, [e]))) : r;
 
+// Rotates a vector (v) around axis (axis) by an angle (a).
+// Uses the Rodrigues rotation formula https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula.
+function rotate_vector(v, a, axis) = v * cos(a) + cross(axis, v) * sin(a) + axis * (axis * v) * (1 - cos(a));
+
+// Gives the rotation matrix corresponding to the rotation in the XYZ format for the OpenSCAD rotate() function.
+// Uses https://en.wikipedia.org/wiki/Euler_angles, in particular Tait-Bryan angles: Z1 Y2 X3 from the table.
+function rotation_matrix(rot) = let
+(
+	c1 = cos(rot[2]), s1 = sin(rot[2]),
+	c2 = cos(rot[1]), s2 = sin(rot[1]),
+	c3 = cos(rot[0]), s3 = sin(rot[0])
+)[
+	[c1*c2,	c1*s2*s3 - c3*s1,	s1*s3 + c1*c3*s2],
+	[c2*s1,	c1*c3 + s1*s2*s3,	c3*s1*s2 - c1*s3], 
+	[-s2,	c2*s3,				c3*c3]
+];
+
 
 //////////////
 // Geometry //
@@ -1890,30 +2009,6 @@ function rotation_to_points(p1, p2) = let(
 function normal_vector(p1, p2, p3) = cross(p2 - p1, p3 - p1);
 function face_normal(vertices, face) = let(points = [for (v = face) vertices[v]]) normal_vector(points[0], points[1], points[2]);
 
-// Returns all edges for a set of faces (used to draw a polygon).
-function get_all_edges(faces, i = 0, r = []) = 
-	assert(is_list(faces), str("get_all_edges: faces ", faces, " is not a list"))
-	delete_cyclic_duplicates(let(f = faces[i]) i < len(faces) ? get_all_edges(faces, i + 1, concat(r, get_edges(f))) : r);
-function get_edges(face) = [for (i = [0 : len(face) - 1]) [face[i], face[(i + 1) % len(face)]]];
-	
-// Find connecting faces to vertex numbers v1 and v2.
-function find_connecting_faces(faces, v1, v2, i = 0, r = []) = let(f = faces[i]) i < len(faces) ? find_connecting_faces(faces, v1, v2, i + 1, is_element(f, v1) && is_element(f, v2) ? concat(r, [f]) : r) : r;
-
-// Find connecting vertices to specified vertex number (i.e. connected via an edge).
-function find_connecting_vertices(faces, edges, v) = let(
-		ce = [for (e = edges) if (is_element(e, v)) e],
-		cv = [for (c = flatten(ce)) if (c != v) c],
-		mf = [for (f = find_meeting_faces(faces, v)) [for (mv = f) if (is_element(cv, mv)) mv]] 
-	) make_edges_cyclic(mf);
-
-function find_meeting_faces(faces, v) = [for (f = faces) if (is_element(f, v)) f];
-
-function make_edges_cyclic(edges, result = []) = let(
-		last_v = len(result) == 0 ? edges[0][0] : result[len(result) - 1],
-		next_v = [for (i = [0 : len(edges) - 1]) if (is_element(edges[i], last_v)) [other_element(edges[i], last_v), i]][0],
-		edges_reduced = vector_remove(edges, [next_v[1]])
-	) len(edges_reduced) > 0 ? make_edges_cyclic(edges_reduced, concat(result, next_v[0])) : concat(result, next_v[0]);
-
 // Gives the faces for a right prism, where the two main surfaces are simple n-gons.
 function right_prism_faces(n) = concat(
 	[
@@ -1922,40 +2017,6 @@ function right_prism_faces(n) = concat(
 	],
 	[for (k = [0 : n - 1]) [k % n, (k + 1) % n, n + (k + 1) % n, n + k % n]]
 );
-	
-// Rotates a vector (v) around axis (axis) by an angle (a).
-// Uses the Rodrigues rotation formula https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula.
-function rotate_vector(v, a, axis) = v * cos(a) + cross(axis, v) * sin(a) + axis * (axis * v) * (1 - cos(a));
-
-// Gives the rotation matrix corresponding to the rotation in the XYZ format for the OpenSCAD rotate() function.
-// Uses https://en.wikipedia.org/wiki/Euler_angles, in particular Tait-Bryan angles: Z1 Y2 X3 from the table.
-function rotation_matrix(rot) = let
-(
-	c1 = cos(rot[2]), s1 = sin(rot[2]),
-	c2 = cos(rot[1]), s2 = sin(rot[1]),
-	c3 = cos(rot[0]), s3 = sin(rot[0])
-)[
-	[c1*c2,	c1*s2*s3 - c3*s1,	s1*s3 + c1*c3*s2],
-	[c2*s1,	c1*c3 + s1*s2*s3,	c3*s1*s2 - c1*s3], 
-	[-s2,	c2*s3,				c3*c3]
-];
-
-// Returns the dihedral angle between two polyhedron faces.
-// This is the angle between f1 and f2 in the edge (f1-f2).
-function dihedral_angle(vertices, f1, f2) = let
-(
-	n1 = face_normal(vertices, f1),
-	n2 = face_normal(vertices, f2)
-) acos(-n1 * n2 / (norm(n1) * norm(n2)));
-
-// Return the partial dihedral angle between the two polyhedron faces (f1 and f2 are lists of vertex numbers).
-// The is the angle between f1, the edge (f1-f2) and the center of the polyhedron.
-function partial_dihedral_angle(vertices, f1, f2) = let
-(
-	n1 = face_normal(vertices, f1),
-	shared_v = [for (v = f1) if (is_element(f2, v)) v],
-	nc = normal_vector([0, 0, 0], vertices[shared_v[0]], vertices[shared_v[1]])
-) acos(n1 * nc / (norm(n1) * norm(nc)));
 
 
 ///////////////
@@ -1971,8 +2032,8 @@ module number_vertices(id, a = 1, n = 5, m = 2, r = 0)
 	{
 		color("Red")
 			translate(vertices[i])
-			linear_extrude(height = side / 20)		
-				text(text = str(i), halign = "center", valign = "center", size = side / 5);
+				linear_extrude(height = side / 20)		
+					text(text = str(i), halign = "center", valign = "center", size = side / 5);
 	};
 }
 

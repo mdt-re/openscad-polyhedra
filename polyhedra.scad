@@ -161,7 +161,7 @@ module draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
 }
 
 // Draws the specified polyhedron as a wire frame of all edges, with wire thickness (t).
-module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
+module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1, edge_list = undef)
 {
 	// Check if polyhedron id exists.
 	assert(is_element(list_polyhedra(), id), str("draw_polyhedron_wire_frame: ", id, " is not a valid polyhedron."));
@@ -169,7 +169,8 @@ module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
 	vertices = polyhedron_vertices(id, n = n, m = m);
 	edges = polyhedron_edges(id, n = n, m = m);
 	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
-	for (e = edges)
+	wire_edges = is_undef(edge_list) ? edges : [for (e = edge_list) edges[e]];
+	for (e = wire_edges)
 	{
 		v1 = side * vertices[e[0]];
 		v2 = side * vertices[e[1]];
@@ -180,21 +181,22 @@ module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1)
 				minkowski()
 				{
 					cylinder(h = h, r = 0.000001, center = true);
-					sphere(r = t / 2, $fn = 12);
+					sphere(r = t / 2, $fn = 8);
 				}
 	}
 }
 
 // Draws the specified polyhedron as a set of polygon panels that cover the faces, with panel thickness (t).
-module draw_polyhedron_panels(id, a = 1, n = 5, m = 2, r = 0, t = 1)
+module draw_polyhedron_panels(id, a = 1, n = 5, m = 2, r = 0, t = 1, face_list = undef)
 {
 	// Check if polyhedron id exists.
 	assert(is_element(list_polyhedra(), id), str("draw_polyhedron_wire_frame: ", id, " is not a valid polyhedron."));
 	// Get polyhedron data.
-	vertices = polyhedron_vertices(id);
-	faces = polyhedron_faces(id);
+	vertices = polyhedron_vertices(id, n = n, m = m);
+	faces = polyhedron_faces(id, n = n, m = m);
 	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
-	for (face = faces)
+	panel_faces = is_undef(face_list) ? faces : [for (f = face_list) faces[f]];
+	for (face = panel_faces)
 	{
 		polygon_vertices = [for (v = face) side * vertices[v]];
 		polygon_panel(polygon_vertices, t);

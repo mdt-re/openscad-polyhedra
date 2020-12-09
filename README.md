@@ -2,7 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-An [OpenSCAD](https://www.openscad.org/) library for designing (mostly) regular polyhedra. Currently available are all [Platonic](https://en.wikipedia.org/wiki/Platonic_solid) and [Archimedean](https://en.wikipedia.org/wiki/Archimedean_solid) solids, as well as [prisms](https://en.wikipedia.org/wiki/Prism_(geometry)) and [antiprisms](https://en.wikipedia.org/wiki/Antiprism).
+An [OpenSCAD](https://www.openscad.org/) library for designing (mostly) regular polyhedra. Currently available are all [Platonic](https://en.wikipedia.org/wiki/Platonic_solid), [Archimedean](https://en.wikipedia.org/wiki/Archimedean_solid) and [Catalan](https://en.wikipedia.org/wiki/Catalan_solid) solids, as well as [prisms](https://en.wikipedia.org/wiki/Prism_(geometry)) and [antiprisms](https://en.wikipedia.org/wiki/Antiprism).
 
 
 ## Documentation
@@ -40,6 +40,9 @@ polyhedron_faces_orientation(id)
 polyhedron_faces_inradius(id)
 ```
 
+
+## Implementation details
+ * The default set of polyhedron vertices constructs a polyhedron with unit edge lengths, if there are multiple edge lengths, the shortest edge is unity.
 
 ## Examples
 

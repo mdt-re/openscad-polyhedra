@@ -43,6 +43,7 @@ polyhedron_faces_inradius(id)
 
 ## Implementation details
  * The default set of polyhedron vertices constructs a polyhedron with unit edge lengths, if there are multiple edge lengths, the shortest edge is unity.
+ * For polyhedra that are achiral the enantiomorphs are denoted by appending _leavo and _dextro to the polyhedron id, the non appended name defaults to TODO.
 
 ## Examples
 

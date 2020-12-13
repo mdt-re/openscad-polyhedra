@@ -3,62 +3,62 @@
  * @copyright Maikel de Vries, 2020
  * @license https://www.gnu.org/licenses/gpl-3.0.en.html
  *
- * Library for the drawing of polyhedra. Contains the following polyhedra:
+ * Library for the drawing of polyhedra. Implements the following polyhedra:
  *
- * |---------------------------------|-----------------|
- * | id                              |  F  |  E  |  V  |
- * |---------------------------------|-----------------|
- * | --- platonic solids ------------| --------------- |
- * | tetrahedron                     |   4 |   6 |   4 | 
- * | hexahedron                      |   6 |  12 |   8 |
- * | octahedron                      |   8 |  12 |   6 |
- * | dodecahedron                    |  12 |  30 |  20 |
- * | icosahedron                     |  20 |  30 |  12 |
- * | --- archimedean solids -------- | --------------- |
- * | truncated_tetrahedron           |   8 |  18 |  12 |
- * | cuboctahedron                   |  14 |  24 |  12 |
- * | truncated_cube                  |  14 |  36 |  24 |
- * | truncated_octahedron            |  14 |  36 |  24 |
- * | rhombicuboctahedron             |  26 |  48 |  24 |
- * | truncated_cuboctahedron         |  26 |  72 |  48 |
- * | snub_cube                       |  38 |  60 |  24 |
- * | icosidodecahedron               |  32 |  60 |  30 |
- * | truncated_dodecahedron          |  32 |  90 |  60 |
- * | truncated_icosahedron           |  32 |  90 |  60 |
- * | rhombicosidodecahedron          |  62 | 120 |  60 |
- * | truncated_icosidodecahedron     |  62 | 120 | 120 |
- * | snub_dodecahedron               |  92 | 150 |  60 |
- * | --- catalan solids ------------ | --------------- |
- * | triakis_tetrahedron             |  12 |  18 |   8 |
- * | rhombic_dodecahedron            |  12 |  24 |  14 |
- * | triakis_octahedron              |  24 |  36 |  14 |
- * | tetrakis_hexahedron             |  24 |  36 |  14 |
- * | deltoidal_icositetrahedron      |  24 |  48 |  26 |
- * | disdyakis_dodecahedron          |  48 |  72 |  26 |
- * | pentagonal_icositetrahedron     |  24 |  60 |  38 |
- * | rhombic_triacontahedron         |  30 |  60 |  32 |
- * | triakis_icosahedron             |  60 |  90 |  32 |
- * | pentakis_dodecahedron           |  60 |  90 |  32 |
- * | deltoidal_hexecontahedron       |  60 | 120 |  62 |
- * | disdyakis_triacontahedron       | 120 | 180 |  62 |
- * | pentagonal_hexecontahedron      |  60 | 150 |  92 |
- * | --- regular n-gon polyhedra --- | --------------- |
- * | prism                           | 2+n |  3n |  2n |
- * | antiprism                       |2n+2 |  4n |  2n |
- * | trapezohedron (TODO)            |  2n |  4n | 2n+2|
- * | star_prism (TODO)               |     |     |     |
- * | star_dipyramid (TODO)           |     |     |     |
- * | --- johnson solids ------------ | --------------- |
- * | square pyramid [J1]             |   5 |   8 |   5 |
- * | pentagonal_pyramid [J2]         |   6 |  10 |   6 |
- * | triangular_copula [J3]          |   8 |  15 |   9 |
- * | square_copula [J4]              |  10 |  20 |  12 |
- * | pentagonal_copula [J5]          |  12 |  25 |  15 |
- * | pentagonal_rotunda [J6]         |  17 |  35 |  20 |
- * | snub_disphenoid [J84]           |  12 |  18 |   8 |
- * | --- regular star polyhedra ---- | --------------- |
- * | small_stellated_dodecahedron    |  12 |  30 |  12 |
- * |---------------------------------|-----------------|
+ * |---------------------------------------------|-----------------|
+ * | id                                          |  F  |  E  |  V  |
+ * |---------------------------------------------|-----------------|
+ * | --- platonic solids ------------------------| --------------- |
+ * | tetrahedron                                 |   4 |   6 |   4 | 
+ * | hexahedron                                  |   6 |  12 |   8 |
+ * | octahedron                                  |   8 |  12 |   6 |
+ * | dodecahedron                                |  12 |  30 |  20 |
+ * | icosahedron                                 |  20 |  30 |  12 |
+ * | --- archimedean solids -------------------- | --------------- |
+ * | truncated_tetrahedron                       |   8 |  18 |  12 |
+ * | cuboctahedron                               |  14 |  24 |  12 |
+ * | truncated_cube                              |  14 |  36 |  24 |
+ * | truncated_octahedron                        |  14 |  36 |  24 |
+ * | rhombicuboctahedron                         |  26 |  48 |  24 |
+ * | truncated_cuboctahedron                     |  26 |  72 |  48 |
+ * | snub_cube_(laevo/dextro)                    |  38 |  60 |  24 |
+ * | icosidodecahedron                           |  32 |  60 |  30 |
+ * | truncated_dodecahedron                      |  32 |  90 |  60 |
+ * | truncated_icosahedron                       |  32 |  90 |  60 |
+ * | rhombicosidodecahedron                      |  62 | 120 |  60 |
+ * | truncated_icosidodecahedron                 |  62 | 120 | 120 |
+ * | snub_dodecahedron_(laevo/dextro)            |  92 | 150 |  60 |
+ * | --- catalan solids ------------------------ | --------------- |
+ * | triakis_tetrahedron                         |  12 |  18 |   8 |
+ * | rhombic_dodecahedron                        |  12 |  24 |  14 |
+ * | triakis_octahedron                          |  24 |  36 |  14 |
+ * | tetrakis_hexahedron                         |  24 |  36 |  14 |
+ * | deltoidal_icositetrahedron                  |  24 |  48 |  26 |
+ * | disdyakis_dodecahedron                      |  48 |  72 |  26 |
+ * | pentagonal_icositetrahedron_(laevo/dextro)  |  24 |  60 |  38 |
+ * | rhombic_triacontahedron                     |  30 |  60 |  32 |
+ * | triakis_icosahedron                         |  60 |  90 |  32 |
+ * | pentakis_dodecahedron                       |  60 |  90 |  32 |
+ * | deltoidal_hexecontahedron                   |  60 | 120 |  62 |
+ * | disdyakis_triacontahedron                   | 120 | 180 |  62 |
+ * | pentagonal_hexecontahedron_(laevo/dextro)   |  60 | 150 |  92 |
+ * | --- regular n-gon polyhedra --------------- | --------------- |
+ * | prism                                       | 2+n |  3n |  2n |
+ * | antiprism                                   |2n+2 |  4n |  2n |
+ * | trapezohedron (TODO)                        |  2n |  4n | 2n+2|
+ * | star_prism (TODO)                           |     |     |     |
+ * | star_dipyramid (TODO)                       |     |     |     |
+ * | --- johnson solids ------------------------ | --------------- |
+ * | square pyramid [J1]                         |   5 |   8 |   5 |
+ * | pentagonal_pyramid [J2]                     |   6 |  10 |   6 |
+ * | triangular_copula [J3]                      |   8 |  15 |   9 |
+ * | square_copula [J4]                          |  10 |  20 |  12 |
+ * | pentagonal_copula [J5]                      |  12 |  25 |  15 |
+ * | pentagonal_rotunda [J6]                     |  17 |  35 |  20 |
+ * | snub_disphenoid [J84]                       |  12 |  18 |   8 |
+ * | --- regular star polyhedra ---------------- | --------------- |
+ * | small_stellated_dodecahedron                |  12 |  30 |  12 |
+ * |---------------------------------------------|-----------------|
  *
  * The following functions are available:
  * |---------------------------------|---------------------------------------------------|
@@ -111,8 +111,6 @@
 // Open Issues //
 /////////////////
 
-// Mirror images for snub_cube, snub_dodecahedron, pentagonal icositetrahedron and pentagonal hexecontahedron. 
-
 // Fix inscribed circle radius for non-regular polygon faces.
 
 // Figure out circumradius for Johnson solids.
@@ -145,9 +143,9 @@ function list_polyhedra() =
 	// Platonic solids.
 	"tetrahedron", "hexahedron", "octahedron", "dodecahedron", "icosahedron", 
 	// Archimedean solids.
-	"truncated_tetrahedron", "cuboctahedron", "truncated_cube", "truncated_octahedron", "rhombicuboctahedron", "truncated_cuboctahedron", "snub_cube", "icosidodecahedron", "truncated_dodecahedron", "truncated_icosahedron", "rhombicosidodecahedron", "truncated_icosidodecahedron", "snub_dodecahedron",
+	"truncated_tetrahedron", "cuboctahedron", "truncated_cube", "truncated_octahedron", "rhombicuboctahedron", "truncated_cuboctahedron", "snub_cube", "snub_cube_laevo", "snub_cube_dextro", "icosidodecahedron", "truncated_dodecahedron", "truncated_icosahedron", "rhombicosidodecahedron", "truncated_icosidodecahedron", "snub_dodecahedron", "snub_dodecahedron_laevo", "snub_dodecahedron_dextro",
 	// Catalan solids.
-	"triakis_tetrahedron", "rhombic_dodecahedron", "triakis_octahedron", "tetrakis_hexahedron", "deltoidal_icositetrahedron", "disdyakis_dodecahedron", "pentagonal_icositetrahedron", "rhombic_triacontahedron", "triakis_icosahedron", "pentakis_dodecahedron", "deltoidal_hexecontahedron", "disdyakis_triacontahedron", "pentagonal_hexecontahedron",
+	"triakis_tetrahedron", "rhombic_dodecahedron", "triakis_octahedron", "tetrakis_hexahedron", "deltoidal_icositetrahedron", "disdyakis_dodecahedron", "pentagonal_icositetrahedron", "pentagonal_icositetrahedron_laevo", "pentagonal_icositetrahedron_dextro", "rhombic_triacontahedron", "triakis_icosahedron", "pentakis_dodecahedron", "deltoidal_hexecontahedron", "disdyakis_triacontahedron", "pentagonal_hexecontahedron", "pentagonal_hexecontahedron_laevo", "pentagonal_hexecontahedron_dextro",
 	// Regular N-gon Polyhedra.
 	"prism", "antiprism", "trapezohedron", "star_prism", "star_dipyramid", 
 	// Johnson solids.
@@ -259,8 +257,10 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 		VERTICES_RHOMBICUBOCTAHEDRON
 	: id == "truncated_cuboctahedron" ?
 		VERTICES_TRUNCATED_CUBOCTAHEDRON
-	: id == "snub_cube" ?
-		VERTICES_SNUB_CUBE
+	: id == "snub_cube" || id == "snub_cube_laevo" ?
+		VERTICES_SNUB_CUBE_LAEVO
+	: id == "snub_cube_dextro" ?
+		VERTICES_SNUB_CUBE_DEXTRO
 	: id == "icosidodecahedron" ?
 		VERTICES_ICOSIDODECAHEDRON
 	: id == "truncated_dodecahedron" ?
@@ -273,6 +273,10 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 		VERTICES_TRUNCATED_ICOSIDODECAHEDRON
 	: id == "snub_dodecahedron" ?
 		VERTICES_SNUB_DODECAHEDRON
+	: id == "snub_dodecahedron" || id == "snub_dodecahedron_laevo" ?
+		VERTICES_SNUB_DODECAHEDRON_LAEVO
+	: id == "snub_dodecahedron_dextro" ?
+		VERTICES_SNUB_DODECAHEDRON_DEXTRO
 	// Catalan solids.
 	: id == "triakis_tetrahedron" ?
 		VERTICES_TRIAKIS_TETRAHEDRON
@@ -286,8 +290,10 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 		VERTICES_DELTOIDAL_ICOSITETRAHEDRON
 	: id == "disdyakis_dodecahedron" ?
 		VERTICES_DISDYAKIS_DODECAHEDRON
-	: id == "pentagonal_icositetrahedron" ?
-		VERTICES_PENTAGONAL_ICOSITETRAHEDRON
+	: id == "pentagonal_icositetrahedron" || id == "pentagonal_icositetrahedron_laevo" ?
+		VERTICES_PENTAGONAL_ICOSITETRAHEDRON_LAEVO
+	: id == "pentagonal_icositetrahedron_dextro" ?
+		VERTICES_PENTAGONAL_ICOSITETRAHEDRON_DEXTRO
 	: id == "rhombic_triacontahedron" ?	
 		VERTICES_RHOMBIC_TRIACONTAHEDRON
 	: id == "triakis_icosahedron" ?	
@@ -298,8 +304,10 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 		VERTICES_DELTOIDAL_HEXECONTAHEDRON
 	: id == "disdyakis_triacontahedron" ?	
 		VERTICES_DISDYAKIS_TRIACONTAHEDRON
-	: id == "pentagonal_hexecontahedron" ?	
-		VERTICES_PENTAGONAL_HEXECONTAHEDRON	
+	: id == "pentagonal_hexecontahedron" || id == "pentagonal_hexecontahedron_laevo" ?	
+		VERTICES_PENTAGONAL_HEXECONTAHEDRON_LAEVO
+	: id == "pentagonal_hexecontahedron_dextro" ?	
+		VERTICES_PENTAGONAL_HEXECONTAHEDRON_DEXTRO
 	// Regular n-gon polyhedra.
 	: id == "prism" ?
 		VERTICES_PRISM(n = n)
@@ -360,8 +368,10 @@ function polyhedron_faces(id, n = 5, m = 2) =
 		FACES_RHOMBICUBOCTAHEDRON
 	: id == "truncated_cuboctahedron" ?
 		FACES_TRUNCATED_CUBOCTAHEDRON
-	: id == "snub_cube" ?
-		FACES_SNUB_CUBE
+	: id == "snub_cube" || id == "snub_cube_laevo" ?
+		FACES_SNUB_CUBE_LAEVO
+	: id == "snub_cube_dextro" ?
+		FACES_SNUB_CUBE_DEXTRO
 	: id == "icosidodecahedron" ?
 		FACES_ICOSIDODECAHEDRON
 	: id == "truncated_dodecahedron" ?
@@ -372,8 +382,10 @@ function polyhedron_faces(id, n = 5, m = 2) =
 		FACES_RHOMBICOSIDODECAHEDRON
 	: id == "truncated_icosidodecahedron" ?	
 		FACES_TRUNCATED_ICOSIDODECAHEDRON
-	: id == "snub_dodecahedron" ?
-		FACES_SNUB_DODECAHEDRON
+	: id == "snub_dodecahedron" || id == "snub_dodecahedron_laevo" ?
+		FACES_SNUB_DODECAHEDRON_LAEVO
+	: id == "snub_dodecahedron_dextro" ?
+		FACES_SNUB_DODECAHEDRON_DEXTRO
 	// Catalan solids.
 	: id == "triakis_tetrahedron" ?
 		FACES_TRIAKIS_TETRAHEDRON
@@ -387,8 +399,10 @@ function polyhedron_faces(id, n = 5, m = 2) =
 		FACES_DELTOIDAL_ICOSITETRAHEDRON
 	: id == "disdyakis_dodecahedron" ?
 		FACES_DISDYAKIS_DODECAHEDRON
-	: id == "pentagonal_icositetrahedron" ?
-		FACES_PENTAGONAL_ICOSITETRAHEDRON
+	: id == "pentagonal_icositetrahedron" || id == "pentagonal_icositetrahedron_laevo" ?
+		FACES_PENTAGONAL_ICOSITETRAHEDRON_LAEVO
+	: id == "pentagonal_icositetrahedron_dextro" ?
+		FACES_PENTAGONAL_ICOSITETRAHEDRON_DEXTRO
 	: id == "rhombic_triacontahedron" ?	
 		FACES_RHOMBIC_TRIACONTAHEDRON
 	: id == "triakis_icosahedron" ?	
@@ -399,8 +413,10 @@ function polyhedron_faces(id, n = 5, m = 2) =
 		FACES_DELTOIDAL_HEXECONTAHEDRON
 	: id == "disdyakis_triacontahedron" ?	
 		FACES_DISDYAKIS_TRIACONTAHEDRON
-	: id == "pentagonal_hexecontahedron" ?	
-		FACES_PENTAGONAL_HEXECONTAHEDRON	
+	: id == "pentagonal_hexecontahedron" || id == "pentagonal_hexecontahedron_laevo" ?	
+		FACES_PENTAGONAL_HEXECONTAHEDRON_LAEVO
+	: id == "pentagonal_hexecontahedron_dextro" ?	
+		FACES_PENTAGONAL_HEXECONTAHEDRON_DEXTRO
 	// Regular n-gon polyhedra.
 	: id == "prism" ?
 		FACES_PRISM(n = n)
@@ -464,7 +480,7 @@ function circumradius_factor(id, n = 5, m = 2) =
 		CIRCUMRADIUS_RHOMBICUBOCTAHEDRON
 	: id == "truncated_cuboctahedron" ?
 		CIRCUMRADIUS_TRUNCATED_CUBOCTAHEDRON
-	: id == "snub_cube" ?
+	: id == "snub_cube" || id == "snub_cube_laevo" || id == "snub_cube_dextro" ?
 		CIRCUMRADIUS_SNUB_CUBE
 	: id == "icosidodecahedron" ?
 		CIRCUMRADIUS_ICOSIDODECAHEDRON
@@ -476,7 +492,7 @@ function circumradius_factor(id, n = 5, m = 2) =
 		CIRCUMRADIUS_RHOMBICOSIDODECAHEDRON
 	: id == "truncated_icosidodecahedron" ?	
 		CIRCUMRADIUS_TRUNCATED_ICOSIDODECAHEDRON
-	: id == "snub_dodecahedron" ?
+	: id == "snub_dodecahedron" || id == "snub_dodecahedron_laevo" || id == "snub_dodecahedron_dextro" ?
 		CIRCUMRADIUS_SNUB_DODECAHEDRON
 	// Catalan solids.
 	: id == "triakis_tetrahedron" ?
@@ -491,7 +507,7 @@ function circumradius_factor(id, n = 5, m = 2) =
 		CIRCUMRADIUS_DELTOIDAL_ICOSITETRAHEDRON
 	: id == "disdyakis_dodecahedron" ?
 		CIRCUMRADIUS_DISDYAKIS_DODECAHEDRON
-	: id == "pentagonal_icositetrahedron" ?
+	: id == "pentagonal_icositetrahedron" || id == "pentagonal_icositetrahedron_laevo" || id == "pentagonal_icositetrahedron_dextro" ?
 		CIRCUMRADIUS_PENTAGONAL_ICOSITETRAHEDRON
 	: id == "rhombic_triacontahedron" ?	
 		CIRCUMRADIUS_RHOMBIC_TRIACONTAHEDRON
@@ -503,7 +519,7 @@ function circumradius_factor(id, n = 5, m = 2) =
 		CIRCUMRADIUS_DELTOIDAL_HEXECONTAHEDRON
 	: id == "disdyakis_triacontahedron" ?	
 		CIRCUMRADIUS_DISDYAKIS_TRIACONTAHEDRON
-	: id == "pentagonal_hexecontahedron" ?	
+	: id == "pentagonal_hexecontahedron" || id == "pentagonal_hexecontahedron_laevo" || id == "pentagonal_hexecontahedron_dextro" ?	
 		CIRCUMRADIUS_PENTAGONAL_HEXECONTAHEDRON	
 	// Regular n-gon polyhedra.
 	: id == "prism" ?
@@ -882,18 +898,16 @@ CIRCUMRADIUS_TRUNCATED_CUBOCTAHEDRON = sqrt(13 + 6 * sqrt(2)) / 2;
 
 // Source: https://en.wikipedia.org/wiki/Snub_cube
 CONSTANT_SNUB_CUBE = let (beta = pow(26 + 6 * sqrt(33), 1/3)) sqrt(4 / 3 - 16 / (3 * beta) + 2 * beta / 3);
-VERTICES_SNUB_CUBE = [ // for the even mirror image.
+VERTICES_SNUB_CUBE_LAEVO = [
 	// even permutations
 	[+1, +1/TRIBONACCI, -TRIBONACCI],
 	[+1, -1/TRIBONACCI, +TRIBONACCI],
 	[-1, +1/TRIBONACCI, +TRIBONACCI],
 	[-1, -1/TRIBONACCI, -TRIBONACCI],
-
 	[-TRIBONACCI, +1, +1/TRIBONACCI],
 	[+TRIBONACCI, -1, +1/TRIBONACCI],
 	[+TRIBONACCI, +1, -1/TRIBONACCI],
 	[-TRIBONACCI, -1, -1/TRIBONACCI],
-
 	[+1/TRIBONACCI, -TRIBONACCI, +1],
 	[-1/TRIBONACCI, +TRIBONACCI, +1],
 	[+1/TRIBONACCI, +TRIBONACCI, -1],
@@ -904,21 +918,51 @@ VERTICES_SNUB_CUBE = [ // for the even mirror image.
 	[+TRIBONACCI, -1/TRIBONACCI, -1],
 	[-TRIBONACCI, +1/TRIBONACCI, -1],
 	[-TRIBONACCI, -1/TRIBONACCI, +1],
-	
 	[+1/TRIBONACCI, +1, +TRIBONACCI],
 	[-1/TRIBONACCI, +1, -TRIBONACCI],
 	[+1/TRIBONACCI, -1, -TRIBONACCI],
 	[-1/TRIBONACCI, -1, +TRIBONACCI],
-	
 	[+1, +TRIBONACCI, +1/TRIBONACCI],
 	[+1, -TRIBONACCI, -1/TRIBONACCI],
 	[-1, -TRIBONACCI, +1/TRIBONACCI],
 	[-1, +TRIBONACCI, -1/TRIBONACCI]
 ] / CONSTANT_SNUB_CUBE;
-FACES_SNUB_CUBE = [
-	[2, 16, 1, 19], [0, 17, 3, 18], [23, 10, 20, 9], [22, 8, 21, 11], [12, 6, 13, 5], [4, 15, 7, 14],
+VERTICES_SNUB_CUBE_DEXTRO = [
+	// even permutations
+	[-1, -1/TRIBONACCI, +TRIBONACCI],
+	[-1, +1/TRIBONACCI, -TRIBONACCI],
+	[+1, -1/TRIBONACCI, -TRIBONACCI],
+	[+1, +1/TRIBONACCI, +TRIBONACCI],
+	[+TRIBONACCI, -1, -1/TRIBONACCI],
+	[-TRIBONACCI, +1, -1/TRIBONACCI],
+	[-TRIBONACCI, -1, +1/TRIBONACCI],
+	[+TRIBONACCI, +1, +1/TRIBONACCI],
+	[-1/TRIBONACCI, +TRIBONACCI, -1],
+	[+1/TRIBONACCI, -TRIBONACCI, -1],
+	[-1/TRIBONACCI, -TRIBONACCI, +1],
+	[+1/TRIBONACCI, +TRIBONACCI, +1],
 	
+	// odd permutations
+	[-TRIBONACCI, -1/TRIBONACCI, -1],
+	[-TRIBONACCI, +1/TRIBONACCI, +1],
+	[+TRIBONACCI, -1/TRIBONACCI, +1],
+	[+TRIBONACCI, +1/TRIBONACCI, -1],
+	[-1/TRIBONACCI, -1, -TRIBONACCI],
+	[+1/TRIBONACCI, -1, +TRIBONACCI],
+	[-1/TRIBONACCI, +1, +TRIBONACCI],
+	[+1/TRIBONACCI, +1, -TRIBONACCI],
+	[-1, -TRIBONACCI, -1/TRIBONACCI],
+	[-1, +TRIBONACCI, +1/TRIBONACCI],
+	[+1, +TRIBONACCI, -1/TRIBONACCI],
+	[+1, -TRIBONACCI, +1/TRIBONACCI]
+] / CONSTANT_SNUB_CUBE;
+FACES_SNUB_CUBE_LAEVO = [
+	[2, 16, 1, 19], [0, 17, 3, 18], [23, 10, 20, 9], [22, 8, 21, 11], [12, 6, 13, 5], [4, 15, 7, 14],
 	[19, 1, 8], [19, 8, 22], [15, 19, 22], [15, 22, 7], [2, 19, 15], [2, 15, 4], [2, 4, 9], [16, 2, 9], [16, 9, 20], [16, 20, 12], [16, 12, 1], [1, 12, 5], [1, 5, 8], [9, 4, 23], [4, 14, 23], [12, 20, 6], [20, 10, 6], [8, 5, 21], [5, 13, 21], [22, 11, 7], [21, 13, 18], [13, 0, 18], [13, 6, 0], [6, 10, 0], [10, 17, 0], [10, 23, 17], [23, 14, 17], [14, 3, 17], [14, 7, 3], [7, 11, 3], [11, 18, 3], [11, 21, 18]
+];
+FACES_SNUB_CUBE_DEXTRO = [
+	[2, 19, 1, 16], [0, 18, 3, 17], [20, 10, 23, 9], [21, 8, 22, 11], [13, 6, 12, 5], [4, 14, 7, 15],
+	[19, 8, 1], [19, 22, 8], [15, 22, 19], [15, 7, 22], [2, 15, 19], [2, 4, 15], [2, 9, 4], [16, 9, 2], [16, 20, 9], [16, 12, 20], [16, 1, 12], [1, 5, 12], [1, 8, 5], [9, 23, 4], [4, 23, 14], [12, 6, 20], [20, 6, 10], [8, 21, 5], [5, 21, 13], [22, 7, 11], [21, 18, 13], [13, 18, 0], [13, 0, 6], [6, 0, 10], [10, 0, 17], [10, 17, 23], [23, 17, 14], [14, 17, 3], [14, 3, 7], [7, 3, 11], [11, 3, 18], [11, 18, 21]
 ];
 CIRCUMRADIUS_SNUB_CUBE = sqrt((3 - TRIBONACCI) / (8 - 4 * TRIBONACCI));
 
@@ -1361,7 +1405,7 @@ CIRCUMRADIUS_TRUNCATED_ICOSIDODECAHEDRON = sqrt(31 + 12 * sqrt(5)) / 2;
 
 // Source: https://en.wikipedia.org/wiki/Snub_dodecahedron
 // Source: https://mathworld.wolfram.com/SnubDodecahedron.html
-VERTICES_SNUB_DODECAHEDRON =
+VERTICES_SNUB_DODECAHEDRON_LAEVO =
 [
 	[-2.050215876504471, -0.643029605914073, +0.175392626961585],
 	[+2.050215876504471, -0.643029605914073, -0.175392626961585],
@@ -1424,13 +1468,22 @@ VERTICES_SNUB_DODECAHEDRON =
 	[-0.204101125265964, -1.103156835071754, +1.840929796555298],
 	[+0.204101125265964, -1.103156835071754, -1.840929796555298]
 ];
-FACES_SNUB_DODECAHEDRON = 
+VERTICES_SNUB_DODECAHEDRON_DEXTRO = -VERTICES_SNUB_DODECAHEDRON_LAEVO;
+FACES_SNUB_DODECAHEDRON_LAEVO = 
 [
 	[19, 25, 31, 57, 35], [24, 30, 56, 34, 18], [23, 41, 37, 33, 58], [27, 39, 15, 5, 1], [17, 9, 3, 43, 55], [32, 59, 22, 40, 36], [21, 47, 52, 11, 45], [16, 8, 2, 42, 54], [38, 14, 4, 0, 26], [10, 44, 20, 46, 53], [7, 49, 51, 13, 29], [12, 28, 6, 48, 50],
 	
 	[35, 57, 56], [33, 35, 56], [35, 33, 37], [37, 19, 35], [37, 27, 19], [27, 1, 19], [1, 25, 19], [1, 9, 25], [9, 17, 25], [25, 17, 31], [17, 59, 31], [31, 32, 57], [31, 59, 32], [32, 34, 57], [57, 34, 56], [41, 27, 37], [41, 39, 27], [23, 21, 41], [21, 39, 41], [21, 45, 39], [47, 21, 23], [23, 54, 47], [58, 54, 23], [16, 54, 58], [16, 58, 30], [58, 33, 30], [33, 56, 30], [16, 30, 24], [8, 16, 24], [8, 24, 0], [0, 24, 18], [0, 18, 26], [26, 18, 36], [18, 34, 36], [34, 32, 36], [26, 36, 40], [38, 26, 40], [38, 40, 20], [20, 40, 22], [20, 22, 46], [46, 22, 55], [22, 59, 55], [59, 17, 55], [1, 5, 9], [5, 3, 9], [15, 29, 5], [5, 29, 3], [3, 29, 13], [3, 13, 43], [13, 53, 43], [43, 46, 55], [43, 53, 46], [39, 45, 15], [45, 7, 15], [15, 7, 29], [47, 54, 42], [47, 42, 52], [52, 42, 12], [42, 2, 12], [2, 28, 12], [2, 8, 4], [8, 0, 4], [2, 4, 28], [28, 4, 14], [6, 28, 14], [45, 11, 7], [7, 11, 49], [11, 52, 50], [50, 52, 12], [11, 50, 49], [49, 50, 48], [49, 48, 51], [13, 51, 53], [51, 10, 53], [51, 48, 10], [48, 6, 10], [10, 6, 44], [6, 14, 44], [14, 38, 44], [44, 38, 20]
 ];
+FACES_SNUB_DODECAHEDRON_DEXTRO = 
+[
+	[19, 35, 57, 31, 25], [24, 18, 34, 56, 30], [23, 58, 33, 37, 41], [27, 1, 5, 15, 39], [17, 55, 43, 3, 9], [32, 36, 40, 22, 59], [21, 45, 11, 52, 47], [16, 54, 42, 2, 8], [38, 26, 0, 4, 14], [10, 53, 46, 20, 44], [7, 29, 13, 51, 49], [12, 50, 48, 6, 28],
+	
+	[35, 56, 57], [33, 56, 35], [35, 37, 33], [37, 35, 19], [37, 19, 27], [27, 19, 1], [1, 19, 25], [1, 25, 9], [9, 25, 17], [25, 31, 17], [17, 31, 59], [31, 57, 32], [31, 32, 59], [32, 57, 34], [57, 56, 34], [41, 37, 27], [41, 27, 39], [23, 41, 21], [21, 41, 39], [21, 39, 45], [47, 23, 21], [23, 47, 54], [58, 23, 54], [16, 58, 54], [16, 30, 58], [58, 30, 33], [33, 30, 56], [16, 24, 30], [8, 24, 16], [8, 0, 24], [0, 18, 24], [0, 26, 18], [26, 36, 18], [18, 36, 34], [34, 36, 32], [26, 40, 36], [38, 40, 26], [38, 20, 40], [20, 22, 40], [20, 46, 22], [46, 55, 22], [22, 55, 59], [59, 55, 17], [1, 9, 5], [5, 9, 3], [15, 5, 29], [5, 3, 29], [3, 13, 29], [3, 43, 13], [13, 43, 53], [43, 55, 46], [43, 46, 53], [39, 15, 45], [45, 15, 7], [15, 29, 7], [47, 42, 54], [47, 52, 42], [52, 12, 42], [42, 12, 2], [2, 12, 28], [2, 4, 8], [8, 4, 0], [2, 28, 4], [28, 14, 4], [6, 14, 28], [45, 7, 11], [7, 49, 11], [11, 50, 52], [50, 12, 52], [11, 49, 50], [49, 48, 50], [49, 51, 48], [13, 53, 51], [51, 53, 10], [51, 10, 48], [48, 10, 6], [10, 44, 6], [6, 44, 14], [14, 44, 38], [44, 20, 38]
+];
 CIRCUMRADIUS_SNUB_DODECAHEDRON = 2.155837375115640;
+
+
 //////////////////////////
 // Data: Catalan Solids //
 //////////////////////////	
@@ -1599,7 +1652,7 @@ FACES_DISDYAKIS_DODECAHEDRON =
 CIRCUMRADIUS_DISDYAKIS_DODECAHEDRON = sqrt(366 + 213 * sqrt(2)) / 14;
 
 // Source: https://en.wikipedia.org/wiki/Pentagonal_icositetrahedron
-VERTICES_PENTAGONAL_ICOSITETRAHEDRON = [
+VERTICES_PENTAGONAL_ICOSITETRAHEDRON_LAEVO = [
 	[+1, +(2*TRIBONACCI + 1), +pow(TRIBONACCI, 2)],
 	[+1, -(2*TRIBONACCI + 1), -pow(TRIBONACCI, 2)],
 	[-1, +(2*TRIBONACCI + 1), -pow(TRIBONACCI, 2)],
@@ -1646,7 +1699,8 @@ VERTICES_PENTAGONAL_ICOSITETRAHEDRON = [
 	[-pow(TRIBONACCI, 2), -pow(TRIBONACCI, 2), +pow(TRIBONACCI, 2)],
 	[-pow(TRIBONACCI, 2), -pow(TRIBONACCI, 2), -pow(TRIBONACCI, 2)]
 ] / sqrt(4 + pow(1 + 2 * TRIBONACCI - pow(TRIBONACCI, 2), 2) + pow(-1 - 2 * TRIBONACCI + pow(TRIBONACCI, 2), 2));
-FACES_PENTAGONAL_ICOSITETRAHEDRON =
+VERTICES_PENTAGONAL_ICOSITETRAHEDRON_DEXTRO = - VERTICES_PENTAGONAL_ICOSITETRAHEDRON_LAEVO;
+FACES_PENTAGONAL_ICOSITETRAHEDRON_LAEVO =
 [
 	[24, 21, 4, 30, 8], [24, 8, 13, 31, 23], [24, 23, 7, 33, 10], [24, 10, 14, 32, 21],
 	[25, 22, 6, 36, 9], [25, 9, 12, 37, 20], [25, 20, 5, 35, 11], [25, 11, 15, 34, 22],
@@ -1654,6 +1708,15 @@ FACES_PENTAGONAL_ICOSITETRAHEDRON =
 	[27, 3, 19, 32, 14], [27, 14, 10, 33, 1], [27, 1, 16, 37, 12], [27, 12, 9, 36, 3],
 	[28, 19, 3, 36, 6], [28, 4, 21, 32, 19], [28, 17, 0, 30, 4], [28, 6, 22, 34, 17],
 	[29, 5, 20, 37, 16], [29, 16, 1, 33, 7], [29, 7, 23, 31, 18], [29, 18, 2, 35, 5]
+];
+FACES_PENTAGONAL_ICOSITETRAHEDRON_DEXTRO =
+[
+	[24, 8, 30, 4, 21], [24, 23, 31, 13, 8], [24, 10, 33, 7, 23], [24, 21, 32, 14, 10],
+	[25, 9, 36, 6, 22], [25, 20, 37, 12, 9], [25, 11, 35, 5, 20], [25, 22, 34, 15, 11],
+	[26, 15, 34, 17, 0], [26, 2, 35, 11, 15], [26, 13, 31, 18, 2], [26, 0, 30, 8, 13],
+	[27, 14, 32, 19, 3], [27, 1, 33, 10, 14], [27, 12, 37, 16, 1], [27, 3, 36, 9, 12],
+	[28, 6, 36, 3, 19], [28, 19, 32, 21, 4], [28, 4, 30, 0, 17], [28, 17, 34, 22, 6],
+	[29, 16, 37, 20, 5], [29, 7, 33, 1, 16], [29, 18, 31, 23, 7], [29, 5, 35, 2, 18]
 ];
 CIRCUMRADIUS_PENTAGONAL_ICOSITETRAHEDRON = pow(TRIBONACCI, 3) / sqrt(4 + pow(1 + 2 * TRIBONACCI - pow(TRIBONACCI, 2), 2) + pow(-1 - 2 * TRIBONACCI + pow(TRIBONACCI, 2), 2));
 
@@ -1821,12 +1884,14 @@ FACES_DISDYAKIS_TRIACONTAHEDRON = [
 CIRCUMRADIUS_DISDYAKIS_TRIACONTAHEDRON = 2.96147472657198;
 
 // Source: https://en.wikipedia.org/wiki/Pentagonal_hexecontahedron
-VERTICES_PENTAGONAL_HEXECONTAHEDRON = [
+VERTICES_PENTAGONAL_HEXECONTAHEDRON_LAEVO = [
 	[0,0,-3.63220378886379],[0,0,3.63220378886379],[-2.42146919257586,0,-2.70728486001058],[2.42146919257586,0,2.70728486001058],[-3.74093437672698,0,-0.714454891113402],[3.74093437672698,0,0.714454891113402],[-2.31202459450018,0,3.02647948561358],[2.31202459450018,0,-3.02647948561358],[-2.97388363532738,1.24950378846303,-1.66962893182438],[2.97388363532738,1.24950378846303,1.66962893182438],[-3.20333080309561,-1.64691794069037,-0.468227964145153],[3.20333080309561,-1.64691794069037,0.468227964145153],[-2.89122489745749,-0.643029605914073,-2.10243570224547],[2.89122489745749,-0.643029605914073,2.10243570224547],[-3.33707545043626,1.41526541625598,0.232068100957242],[3.33707545043626,1.41526541625598,-0.232068100957242],[-3.47888159873942,-0.374821658114562,0.974574733100019],[3.47888159873942,-0.374821658114562,-0.974574733100019],[-0.175392626961585,3.59762482255119,0.468227964145153],[0.175392626961585,3.59762482255119,-0.468227964145153],[-2.70728486001058,-2.09705383525209,-1.21073459628793],[-2.70728486001058,2.09705383525209,-1.21073459628793],[2.70728486001058,-2.09705383525209,1.21073459628793],[2.70728486001058,2.09705383525209,1.21073459628793],[-2.46400769156129,0.973950630643917,-2.48455038766204],[2.46400769156129,0.973950630643917,2.48455038766204],[-3.24272173555151,0.374821658114562,1.59284928170449],[3.24272173555151,0.374821658114562,-1.59284928170449],[-3.02793817613402,-1.95070688186081,0.468227964145153],[3.02793817613402,-1.95070688186081,-0.468227964145153],[-2.89419352879337,2.18235940629521,-0.232068100957242],[2.89419352879337,2.18235940629521,0.232068100957242],[-3.16974432443718,-1.29605054642411,1.21073459628793],[-3.16974432443718,1.29605054642411,1.21073459628793],[3.16974432443718,-1.29605054642411,-1.21073459628793],[3.16974432443718,1.29605054642411,-1.21073459628793],[-2.54666642943119,-1.58042481319287,-2.05174361724095],[2.54666642943119,-1.58042481319287,2.05174361724095],[-0.753368001487954,0.643029605914073,3.49454631448612],[0.753368001487954,0.643029605914073,-3.49454631448612],[-0.442881921642891,-3.59762482255119,-0.232068100957242],[0.442881921642891,-3.59762482255119,0.232068100957242],[-0.404839794729811,-3.20021067032384,1.66962893182438],[0.404839794729811,-3.20021067032384,-1.66962893182438],[-1.10351603403915,-1.24950378846303,3.22705701980481],[1.10351603403915,-1.24950378846303,-3.22705701980481],[-0.462459464426607,-3.39310438167620,-1.21073459628793],[-0.462459464426607,3.39310438167620,-1.21073459628793],[0.462459464426607,-3.39310438167620,1.21073459628793],[0.462459464426607,3.39310438167620,1.21073459628793],[-0.530344005914304,1.58042481319287,3.22705701980481],[0.530344005914304,1.58042481319287,-3.22705701980481],[-0.388537857611141,-2.62086857133429,2.48455038766204],[0.388537857611141,-2.62086857133429,-2.48455038766204],[-2.64202125171190,-1.41526541625598,2.05174361724095],[2.64202125171190,-1.41526541625598,-2.05174361724095],[-0.0953548222807093,2.99569022944885,-2.05174361724095],[0.0953548222807093,2.99569022944885,2.05174361724095],[-2.06404587718553,-2.82538901220928,-0.974574733100019],[2.06404587718553,-2.82538901220928,0.974574733100019],[-2.07546983395015,1.64691794069037,2.48455038766204],[2.07546983395015,1.64691794069037,-2.48455038766204],[-0.180195973363106,-0.973950630643917,3.49454631448612],[0.180195973363106,-0.973950630643917,-3.49454631448612],[-0.888732474621661,2.82538901220928,2.10243570224547],[0.888732474621661,2.82538901220928,-2.10243570224547],[-2.56904384059757,1.95070688186081,1.66962893182438],[2.56904384059757,1.95070688186081,-1.66962893182438],[-1.21073459628793,-2.09705383525209,2.70728486001058],[-1.21073459628793,2.09705383525209,2.70728486001058],[1.21073459628793,-2.09705383525209,-2.70728486001058],[1.21073459628793,2.09705383525209,-2.70728486001058],[-1.29675578995994,-2.99569022944885,-1.59284928170449],[1.29675578995994,-2.99569022944885,1.59284928170449],[-1.94596594559157,2.62086857133429,-1.59284928170449],[1.94596594559157,2.62086857133429,1.59284928170449],[-1.41483572155389,3.20021067032384,-0.974574733100019],[1.41483572155389,3.20021067032384,0.974574733100019],[-1.63386003995345,-0.330921024729844,-3.22705701980481],[1.63386003995345,-0.330921024729844,3.22705701980481],[-2.00249242283583,-2.18235940629521,2.10243570224547],[2.00249242283583,-2.18235940629521,-2.10243570224547],[-0.933563974851060,0.330921024729844,-3.49454631448612],[0.933563974851060,0.330921024729844,3.49454631448612],[-1.87046718836349,-3.23974420413607,0.714454891113402],[-1.87046718836349,3.23974420413607,0.714454891113402],[1.87046718836349,-3.23974420413607,-0.714454891113402],[1.87046718836349,3.23974420413607,-0.714454891113402],[-1.15601229725009,-2.00227203301157,-3.02647948561358],[-1.15601229725009,2.00227203301157,-3.02647948561358],[1.15601229725009,-2.00227203301157,3.02647948561358],[1.15601229725009,2.00227203301157,3.02647948561358]
 ];
-FACES_PENTAGONAL_HEXECONTAHEDRON = [
+VERTICES_PENTAGONAL_HEXECONTAHEDRON_DEXTRO = -VERTICES_PENTAGONAL_HEXECONTAHEDRON_LAEVO;
+FACES_PENTAGONAL_HEXECONTAHEDRON_LAEVO = [
 	[28,32,16,4,10],[11,29,34,17,5],[60,66,33,26,6],[7,61,67,35,27],[33,14,4,16,26],[17,27,35,15,5],[74,21,30,85,76],[31,87,77,75,23],[6,26,16,32,54],[34,55,7,27,17],[89,74,76,47,56],[75,77,49,57,91],[64,85,66,60,69],[61,71,65,87,67],[8,4,14,30,21],[5,15,31,23,9],[44,6,54,80,68],[81,70,45,7,55],[28,10,20,58,84],[11,22,59,86,29],[78,2,24,89,82],[25,91,83,79,3],[88,78,82,0,63],[79,83,1,62,90],[84,80,54,32,28],[29,86,81,55,34],[20,10,4,12,36],[5,13,37,22,11],[85,30,14,33,66],[35,67,87,31,15],[52,68,80,84,42],[86,43,53,70,81],[46,72,88,53,43],[73,90,52,42,48],[84,58,72,46,40],[59,73,48,41,86],[72,58,20,36,88],[22,37,90,73,59],[12,4,8,24,2],[5,9,25,3,13],[36,12,2,78,88],[13,3,79,90,37],[50,69,60,6,38],[39,51,71,61,7],[24,8,21,74,89],[9,23,75,91,25],[0,82,89,51,39],[91,50,38,1,83],[47,76,85,18,19],[87,19,18,49,77],[49,18,85,64,57],[65,56,47,19,87],[91,57,64,69,50],[51,89,56,65,71],[1,38,6,44,62],[45,63,0,39,7],[48,42,84,40,41],[41,40,46,43,86],[90,62,44,68,52],[53,88,63,45,70]
 ];
+FACES_PENTAGONAL_HEXECONTAHEDRON_DEXTRO = FACES_PENTAGONAL_HEXECONTAHEDRON_LAEVO;
 CIRCUMRADIUS_PENTAGONAL_HEXECONTAHEDRON = 3.80854772878240;
 
 
@@ -2250,7 +2315,7 @@ function sum(v) = [for (e = v) 1] * v;
 function mean(v) = sum(v) / len(v);
 
 // Determines whether elem is part of vector (v).
-function is_element(v, elem) = assert(is_list(v), str("is_element: v ", v, " is not a list")) search([elem], v, num_returns_per_match = 1) != [[]];
+function is_element(v, elem) = assert(is_list(v), str("is_element: v (= ", v, ") is not a list")) search([elem], v, num_returns_per_match = 1) != [[]];
 
 // Returns the other element in a vector of length two.
 function other_element(v, elem) =

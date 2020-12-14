@@ -36,7 +36,7 @@ function FACES_ANTIPRISM(n = 5) =
 	)
 	concat([top_face, bottom_face], side_faces_top, side_faces_bottom);
 function CIRCUMRADIUS_ANTIPRISM(n = 5) = 1 / 4 * sqrt(4 + 1 / pow(sin(90 / n), 2));
-		
+
 // Source: https://en.wikipedia.org/wiki/Prism_(geometry)#Twisted_prism
 function VERTICES_TWISTED_PRISM(n = 5) =
 	let (

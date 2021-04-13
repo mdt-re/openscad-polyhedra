@@ -147,26 +147,26 @@ function list_polyhedra() =
 ];
 
 // Draws the specified polyhedron.
-module draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
+module draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, h = 0, convexity = 1)
 {
 	// Check if polyhedron id exists.
 	assert(is_element(list_polyhedra(), id), str("draw_polyhedron: ", id, " is not a valid polyhedron."));
 	// Get polyhedron data.
-	vertices = polyhedron_vertices(id, n = n, m = m);
-	faces = polyhedron_faces(id, n = n, m = m);
 	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
+	vertices = polyhedron_vertices(id, n = n, m = m, h = h / side);
+	faces = polyhedron_faces(id, n = n, m = m);
 	polyhedron(vertices * side, faces, convexity);
 }
 
 // Draws the specified polyhedron as a wire frame of all edges, with wire thickness (t).
-module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1, edge_list = undef)
+module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, h = 0, t = 1, edge_list = undef)
 {
 	// Check if polyhedron id exists.
 	assert(is_element(list_polyhedra(), id), str("draw_polyhedron_wire_frame: ", id, " is not a valid polyhedron."));
 	// Get polyhedron data.
-	vertices = polyhedron_vertices(id, n = n, m = m);
-	edges = polyhedron_edges(id, n = n, m = m);
 	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
+	vertices = polyhedron_vertices(id, n = n, m = m, h = h / side);
+	edges = polyhedron_edges(id, n = n, m = m);
 	wire_edges = is_undef(edge_list) ? edges : [for (e = edge_list) edges[e]];
 	for (e = wire_edges)
 	{
@@ -185,14 +185,14 @@ module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1, edge_li
 }
 
 // Draws the specified polyhedron as a set of polygon panels that cover the faces, with panel thickness (t).
-module draw_polyhedron_panels(id, a = 1, n = 5, m = 2, r = 0, t = 1, face_list = undef)
+module draw_polyhedron_panels(id, a = 1, n = 5, m = 2, r = 0, h = 0, t = 1, face_list = undef)
 {
 	// Check if polyhedron id exists.
 	assert(is_element(list_polyhedra(), id), str("draw_polyhedron_wire_frame: ", id, " is not a valid polyhedron."));
 	// Get polyhedron data.
-	vertices = polyhedron_vertices(id, n = n, m = m);
-	faces = polyhedron_faces(id, n = n, m = m);
 	side = r == 0 ? a : r / circumradius_factor(id, n = n, m = m);
+	vertices = polyhedron_vertices(id, n = n, m = m, h = h / side);
+	faces = polyhedron_faces(id, n = n, m = m);
 	panel_faces = is_undef(face_list) ? faces : [for (f = face_list) faces[f]];
 	for (face = panel_faces)
 	{
@@ -223,7 +223,7 @@ module polygon_panel(polygon_vertices, t = 1)
 
 // Returns the polyhedron vertices as a list of 3D coordinates.
 // The vertex coordinates are normalized such that the edge length (a) equals 1.
-function polyhedron_vertices(id, n = 5, m = 2) =
+function polyhedron_vertices(id, n = 5, m = 2, h = 0) =
 (
 	// Platonic solids.
 	id == "tetrahedron" ?
@@ -300,7 +300,7 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 		VERTICES_PENTAGONAL_HEXECONTAHEDRON_DEXTRO
 	// Regular n-gon polyhedra.
 	: id == "prism" ?
-		VERTICES_PRISM(n = n)
+		VERTICES_PRISM(n = n, h = h)
 	: id == "antiprism" ?
 		VERTICES_ANTIPRISM(n = n)
 	: id == "trapezohedron" ?

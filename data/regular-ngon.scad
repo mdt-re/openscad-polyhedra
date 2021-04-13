@@ -6,11 +6,12 @@
 
 
 // Source: https://en.wikipedia.org/wiki/Prism_(geometry)
-function VERTICES_PRISM(n = 5) = 
+function VERTICES_PRISM(n = 5, h = 0) = 
 	let (
-		r = 1 / (2 * sin(180 / n))
+		r = 1 / (2 * sin(180 / n)),
+        h = h == 0 ? 1 / 2 : h / 2
 	)
-	[for (k = [0 : 2 * n - 1]) [r * cos(360 * floor(k / 2) / n), r * sin(360 * floor(k / 2) / n), pow(-1, k) * 1 / 2]];
+	[for (k = [0 : 2 * n - 1]) [r * cos(360 * floor(k / 2) / n), r * sin(360 * floor(k / 2) / n), pow(-1, k) * h]];
 function FACES_PRISM(n = 5) = 
 	let (
 		top_face = [for (k = [0 : n - 1]) 2 * k + 1],

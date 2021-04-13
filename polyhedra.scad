@@ -95,7 +95,7 @@
  * | number_edges                    | display numbers at all polyhedron edges           |
  * |---------------------------------|---------------------------------------------------|
  * 
- * Short usage documentation:
+ * Usage documentation:
  *
  *  draw_polyhedron(id, a = 1, n = 5, m = 2, r = 0, convexity = 1)
  *   id:         the name of the polyhedron
@@ -649,6 +649,19 @@ function polyhedron_faces_inradius(id, n = 5, m = 2) =
 	// TODO: this works for regular polyhedra, change if we have irregular ones.
 	// This is faster for regular ones.
 	[for (f = faces) 1 / tan(180 / len(f)) / 2];
+		
+// Returns a list with the incircle radii of all the faces of the polyhedron.
+function polyhedron_faces_circumradius(id, n = 5, m = 2) = 
+	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_circumradius: ", id, " is not a valid polyhedron."))
+	let (
+		faces = polyhedron_faces(id, n = n, m = m)
+		//vertices = polyhedron_vertices(id, n = n, m = m),
+		//face_vertices = [for (f = faces) [for(v = f) vertices[v]]]
+	)
+	//[for (f = face_vertices) norm(f[0] - mean(f))];
+	// TODO: this works for regular polyhedra, change if we have irregular ones.
+	// This is faster for regular ones.
+	[for (f = faces) 1 / sin(180 / len(f)) / 2];
 		
 // Returns the dihedral angle between two polyhedron faces (f1 and f2 are lists of vertex numbers).
 // This is the angle between f1, the edge (f1-f2) and f2.

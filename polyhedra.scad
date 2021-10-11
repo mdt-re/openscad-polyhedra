@@ -45,6 +45,7 @@
  * | --- regular n-gon polyhedra --------------- | --------------- |
  * | prism                                       | 2+n |  3n |  2n |
  * | antiprism                                   |2n+2 |  4n |  2n |
+ * | twisted_prism                               |2n+2 |  4n |  2n |
  * | trapezohedron (TODO)                        |  2n |  4n | 2n+2|
  * | star_prism (TODO)                           |     |     |     |
  * | star_dipyramid (TODO)                       |     |     |     |
@@ -139,7 +140,7 @@ function list_polyhedra() =
 	// Catalan solids.
 	"triakis_tetrahedron", "rhombic_dodecahedron", "triakis_octahedron", "tetrakis_hexahedron", "deltoidal_icositetrahedron", "disdyakis_dodecahedron", "pentagonal_icositetrahedron", "pentagonal_icositetrahedron_laevo", "pentagonal_icositetrahedron_dextro", "rhombic_triacontahedron", "triakis_icosahedron", "pentakis_dodecahedron", "deltoidal_hexecontahedron", "disdyakis_triacontahedron", "pentagonal_hexecontahedron", "pentagonal_hexecontahedron_laevo", "pentagonal_hexecontahedron_dextro",
 	// Regular N-gon Polyhedra.
-	"prism", "antiprism", "trapezohedron", "star_prism", "star_dipyramid", 
+	"prism", "antiprism", "twisted_prism", "twisted_prism_laevo", "twisted_prism_dextro", "trapezohedron", "star_prism", "star_dipyramid", 
 	// Johnson solids.
 	"square_pyramid", "pentagonal_pyramid", "triangular_copula", "square_copula", "pentagonal_copula", "pentagonal_rotunda", "snub_disphenoid",
 	// Regular star polyhedra.
@@ -185,10 +186,11 @@ module draw_polyhedron_wire_frame(id, a = 1, n = 5, m = 2, r = 0, t = 1, edge_li
 }
 
 // Draws the specified polyhedron as a set of polygon panels that cover the faces, with panel thickness (t).
+// The panel is centered at the faces location according to the parameter a (or alternatively r).
 module draw_polyhedron_panels(id, a = 1, n = 5, m = 2, r = 0, t = 1, face_list = undef)
 {
 	// Check if polyhedron id exists.
-	assert(is_element(list_polyhedra(), id), str("draw_polyhedron_wire_frame: ", id, " is not a valid polyhedron."));
+	assert(is_element(list_polyhedra(), id), str("draw_polyhedron_panels: ", id, " is not a valid polyhedron."));
 	// Get polyhedron data.
 	vertices = polyhedron_vertices(id, n = n, m = m);
 	faces = polyhedron_faces(id, n = n, m = m);
@@ -303,6 +305,8 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 		VERTICES_PRISM(n = n)
 	: id == "antiprism" ?
 		VERTICES_ANTIPRISM(n = n)
+	: id == "twisted_prism" || id == "twisted_prism_laevo" || id == "twisted_prism_dextro" ?
+		VERTICES_TWISTED_PRISM(n = n)
 	: id == "trapezohedron" ?
 		VERTICES_TRAPEZOHEDRON(n = n)
 	: id == "star_prism" ?
@@ -412,6 +416,10 @@ function polyhedron_faces(id, n = 5, m = 2) =
 		FACES_PRISM(n = n)
 	: id == "antiprism" ?
 		FACES_ANTIPRISM(n = n)
+	: id == "twisted_prism" || id == "twisted_prism_laevo"?
+		FACES_TWISTED_PRISM_LAEVO(n = n)
+	: id == "twisted_prism_dextro" ?
+		FACES_TWISTED_PRISM_DEXTRO(n = n)
 	: id == "trapezohedron" ?
 		FACES_TRAPEZOHEDRON(n = n)
 	: id == "star_prism" ?
@@ -516,6 +524,8 @@ function circumradius_factor(id, n = 5, m = 2) =
 		CIRCUMRADIUS_PRISM(n = n)
 	: id == "antiprism" ?
 		CIRCUMRADIUS_ANTIPRISM(n = n)
+	: id == "twisted_prism" || id == "twisted_prism_laevo" || id == "twisted_prism_dextro" ?
+		CIRCUMRADIUS_TWISTED_PRISM(n = n)
 	: id == "trapezohedron" ?
 		CIRCUMRADIUS_TRAPEZOHEDRON(n = n)
 	: id == "star_prism" ?
@@ -679,6 +689,9 @@ function partial_dihedral_angle(vertices, f1, f2) = let
 	shared_v = [for (v = f1) if (is_element(f2, v)) v],
 	nc = normal_vector([0, 0, 0], vertices[shared_v[0]], vertices[shared_v[1]])
 ) acos(n1 * nc / (norm(n1) * norm(nc)));
+
+// Returns the length of the given edge (e) of the polyhedron.
+function edge_length(vertices, e) = norm(vertices[e[0]] - vertices[e[1]]);
 
 
 /////////////////

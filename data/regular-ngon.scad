@@ -19,7 +19,7 @@ function FACES_PRISM(n = 5) =
 	) 
 	concat([top_face, bottom_face], side_faces);
 function CIRCUMRADIUS_PRISM(n = 5) = 1 / sin(atan(sin(180 / n))) / 2;
-		
+
 // Source: https://en.wikipedia.org/wiki/Antiprism
 function VERTICES_ANTIPRISM(n = 5) =
 	let (
@@ -37,6 +37,31 @@ function FACES_ANTIPRISM(n = 5) =
 	concat([top_face, bottom_face], side_faces_top, side_faces_bottom);
 function CIRCUMRADIUS_ANTIPRISM(n = 5) = 1 / 4 * sqrt(4 + 1 / pow(sin(90 / n), 2));
 		
+// Source: https://en.wikipedia.org/wiki/Prism_(geometry)#Twisted_prism
+function VERTICES_TWISTED_PRISM(n = 5) =
+	let (
+		r = 1 / (2 * sin(180 / n)),
+		h = sqrt((cos(180 / n) - cos(360 / n)) / 2)
+	)
+	[for (k = [0 : 2 * n - 1]) [r * cos(180 * k / n), r * sin(180 * k / n), r * pow(-1, k) * h]];	
+function FACES_TWISTED_PRISM_LAEVO(n = 5) = 
+	let (
+		top_face = [for (k = [0 : n - 1]) 2 * k + 1],
+		bottom_face = [for (k = [0 : n - 1]) 2 * (n - k - 1)],
+		side_faces_top = [for (k = [0 : 2 : 2 * n - 2]) [for (l = [4, 1, 2]) (l + k) % (2 * n)]],
+		side_faces_bottom = [for (k = [0 : 2 : 2 * n - 2]) [for (l = [4, 3, 1]) (l + k) % (2 * n)]]	
+	)
+	concat([top_face, bottom_face], side_faces_top, side_faces_bottom);
+function FACES_TWISTED_PRISM_DEXTRO(n = 5) = 
+	let (
+		top_face = [for (k = [0 : n - 1]) 2 * k + 1],
+		bottom_face = [for (k = [0 : n - 1]) 2 * (n - k - 1)],
+		side_faces_top = [for (k = [0 : 2 : 2 * n - 2]) [for (l = [2, 3, 0]) (l + k) % (2 * n)]],
+		side_faces_bottom = [for (k = [0 : 2 : 2 * n - 2]) [for (l = [0, 3, 1]) (l + k) % (2 * n)]]	
+	)
+	concat([top_face, bottom_face], side_faces_top, side_faces_bottom);
+function CIRCUMRADIUS_TWISTED_PRISM(n = 5) = 1 / 4 * sqrt(4 + 1 / pow(sin(90 / n), 2));
+
 // Source: https://en.wikipedia.org/wiki/Trapezohedron
 function VERTICES_TRAPEZOHEDRON(n = 5) =
 	let (

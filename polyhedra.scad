@@ -777,7 +777,7 @@ function rotation_to_points(p1, p2) = let(
 	) [rx, 0, rz];
 
 // Returns the normal vector for a plane given by three points.
-function normal_vector(p1, p2, p3) = cross(p2 - p1, p3 - p1);
+function normal_vector(p1, p2, p3) = let(n = cross(p2 - p1, p3 - p1)) n / norm(n);
 function face_normal(vertices, face) = let(points = [for (v = face) vertices[v]]) normal_vector(points[0], points[1], points[2]);
 
 // Gives the faces for a right prism, where the two main surfaces are simple n-gons.

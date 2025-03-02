@@ -11,7 +11,7 @@
 // TODO: Draw something on the edge instead of text.
 
 
-use <../polyhedra.scad>;
+use <../../polyhedra.scad>;
 
 
 //////////////////

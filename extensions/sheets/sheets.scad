@@ -33,7 +33,7 @@ RENDER_EPS = 0.001;
 //////////
 
 // Draws the sheets of the polyhedron in its usual 3d structure for visualization purposes.
-module draw_sheets_3d(id, a = 1, n = 5, m = 2, r = 0, th = 1, face_list = undef, debug = false)
+module draw_sheets_3d(id, a = 1, n = 5, m = 2, r = 0, th = 1, face_list = undef, face_colors = undef, debug = false)
 {
 	// Check if polyhedron id exists.
 	assert(is_element(list_polyhedra(), id), str("draw_sheets_3d: ", id, " is not a valid polyhedron."));
@@ -45,11 +45,13 @@ module draw_sheets_3d(id, a = 1, n = 5, m = 2, r = 0, th = 1, face_list = undef,
 	
 	// Draw sheets for all requested faces.
 	draw_faces = is_undef(face_list) ? [0 : len(faces) - 1] : face_list;
+	draw_colors = is_undef(face_colors) ? [for (l = [0 : len(faces) - 1]) "Gold"] : face_colors;
 	for (nf = draw_faces)
 	{
 		// Add a slight gap between each face for visualization purposes.
 		face_center = r / c_factor * polyhedron_faces_center(id = id, n = n, m = m)[nf];
 		delta = 2;
+		color(draw_colors[nf])
 		translate(delta * face_center / r)
 			draw_model_sheet(id = id, face_n = nf, a = a, n = n, m = m, r = r, th = th);
 
@@ -75,7 +77,8 @@ module draw_sheets_2d(id, a = 1, n = 5, m = 2, r = 0, th = 1, face_list = undef,
 	c_factor = circumradius_factor(id = id, n = n, m = m);
 	
 	// Draw sheets for all requested faces.
-	draw_faces = is_undef(face_list) ? [0 : len(faces) - 1] : face_list;
+	draw_faces = is_undef(face_list) ? [for (i = [0 : len(faces) - 1]) i] : face_list;
+	echo(draw_faces);
 	for (nf = draw_faces)
 	{
 		// Determine rotation of the sheet to the xy-plane.
@@ -87,8 +90,10 @@ module draw_sheets_2d(id, a = 1, n = 5, m = 2, r = 0, th = 1, face_list = undef,
 		rot = face_aligned ? (face_normal == normal_xy ? 180 : 0) : acos(-face_normal * normal_xy / norm(-face_normal));
 		axis = face_aligned ? [1, 0, 0] : cross(-face_normal, normal_xy);
 		// Locate the sheets in a square grid.
-		x = nf % ceil(sqrt(len(faces)));
-		y = floor(nf / ceil(sqrt(len(faces))));
+		ni = search(nf, draw_faces)[0];
+		echo(nf, draw_faces, ni);
+		x = ni % ceil(sqrt(len(draw_faces)));
+		y = floor(ni / ceil(sqrt(len(draw_faces))));
 		d = 3/2 * r;
 		// Draw the sheet and rotate it to the xy-plane, then project to the xy-plane by a z=0 cut.
 		difference()

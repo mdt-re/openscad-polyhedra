@@ -14,10 +14,10 @@ use <../polyhedra.scad>;
 //////////////
 
 // Polyhedron for which to construct connectors, the radius specifies where the center of the tubes meet.
-poly = "tetrahedron";
+poly = "icosahedron";
 poly_n = 5;
 poly_m = 2;
-radius = 100;
+radius = 200;
 // Render accuracy: use a high value (>= 32) when rendering for a 3d print.
 $fn = 48;
 // Inner radius of the tube.
@@ -122,13 +122,14 @@ module round_pin(d_in, d_out, h_in, h_out)
 		// Add a cylinder which fits onto the tube, i.e. has the same outer radius.
 		translate([0, 0, -h_out])
 			cylinder(d = d_out, h = h_out);
-		// Add a cylinder which fits into the tube, i.e. has the same inner raius.
+		// Add a cylinder which fits into the tube, i.e. has the same inner radius.
 		// Do this using a threaded rod which makes fitting into the tube easier.
 		translate([0, 0, -h_out - h_in / 2 + RENDER_EPS])
 			difference()
 			{
-				threaded_rod(d = d_in, l = h_in);
-				cylinder(d = max(d_in - 4, 0), h = h_in + 2 * RENDER_EPS, center = true);
+				cylinder(d = d_in, h = h_in, center = true);
+				//threaded_rod(d = d_in, l = h_in);
+				//cylinder(d = max(d_in - 4, 0), h = h_in + 2 * RENDER_EPS, center = true);
 			}
 	}
 }

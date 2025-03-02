@@ -142,9 +142,11 @@ function list_polyhedra() =
 	// Regular N-gon Polyhedra.
 	"prism", "antiprism", "twisted_prism", "twisted_prism_laevo", "twisted_prism_dextro", "trapezohedron", "star_prism", "star_dipyramid", 
 	// Johnson solids.
-	"square_pyramid", "pentagonal_pyramid", "triangular_copula", "square_copula", "pentagonal_copula", "pentagonal_rotunda", "snub_disphenoid",
+	"square_pyramid", "pentagonal_pyramid", "triangular_copula", "square_copula", "pentagonal_copula", "pentagonal_rotunda", "snub_disphenoid", "bilunabirotunda",
 	// Regular star polyhedra.
-	"small_stellated_dodecahedron"
+	"small_stellated_dodecahedron",
+	// Zonohedra.
+	"bilinski_dodecahedron", "elongated_dodecahedron", "rhombic_icosahedron", 
 ];
 
 // Draws the specified polyhedron.
@@ -328,9 +330,18 @@ function polyhedron_vertices(id, n = 5, m = 2) =
 		VERTICES_PENTAGONAL_ROTUNDA
 	: id == "snub_disphenoid" ?	
 		VERTICES_SNUB_DISPHENOID
+	: id == "bilunabirotunda" ?	
+		VERTICES_BILUNABIROTUNDA
 	// Regular star polyhedra.
 	: id == "small_stellated_dodecahedron" ?
 		VERTICES_SMALL_STELLATED_DODECAHEDRON
+	// Zonohedra.
+	: id == "bilinski_dodecahedron" ?
+		VERTICES_BILINSKI_DODECAHEDRON	
+	: id == "elongated_dodecahedron" ?
+		VERTICES_ELONGATED_DODECAHEDRON	
+	: id == "rhombic_icosahedron" ?
+		VERTICES_RHOMBIC_ICOSAHEDRON	
 	:
 		undef
 );
@@ -441,9 +452,18 @@ function polyhedron_faces(id, n = 5, m = 2) =
 		FACES_PENTAGONAL_ROTUNDA
 	: id == "snub_disphenoid" ?	
 		FACES_SNUB_DISPHENOID
+	: id == "bilunabirotunda" ?	
+		FACES_BILUNABIROTUNDA
 	// Regular star polyhedra.
 	: id == "small_stellated_dodecahedron" ?
 		FACES_SMALL_STELLATED_DODECAHEDRON
+	// Zonohedra.
+	: id == "bilinski_dodecahedron" ?
+		FACES_BILINSKI_DODECAHEDRON	
+	: id == "elongated_dodecahedron" ?
+		FACES_ELONGATED_DODECAHEDRON
+	: id == "rhombic_icosahedron" ?
+		FACES_RHOMBIC_ICOSAHEDRON
 	:
 		undef
 );
@@ -547,9 +567,18 @@ function circumradius_factor(id, n = 5, m = 2) =
 		CIRCUMRADIUS_PENTAGONAL_ROTUNDA
 	: id == "snub_disphenoid" ?	
 		CIRCUMRADIUS_SNUB_DISPHENOID
+	: id == "bilunabirotunda" ?	
+		CIRCUMRADIUS_BILUNABIROTUNDA
 	// Regular star polyhedra.
 	: id == "small_stellated_dodecahedron" ?
 		CIRCUMRADIUS_SMALL_STELLATED_DODECAHEDRON
+	// Zonohedra.
+	: id == "bilinski_dodecahedron" ?
+		CIRCUMRADIUS_BILINSKI_DODECAHEDRON	
+	: id == "elongated_dodecahedron" ?
+		CIRCUMRADIUS_ELONGATED_DODECAHEDRON
+	: id == "rhombic_icosahedron" ?
+		CIRCUMRADIUS_RHOMBIC_ICOSAHEDRON
 	:
 		undef
 );
@@ -566,6 +595,7 @@ include <data/catalan.scad>
 include <data/johnson.scad>
 include <data/regular-ngon.scad>
 include <data/regular-star.scad>
+include <data/zonohedra.scad>
 
 
 /////////////////////////
@@ -673,8 +703,20 @@ function polyhedron_faces_circumradius(id, n = 5, m = 2) =
 	// This is faster for regular ones.
 	[for (f = faces) 1 / sin(180 / len(f)) / 2];
 		
+// Returns the rotation angle and axis [angle, [x, y, z]] to rotate the polyhedron with its first vertex aligned with the north pole [0, 0, 1].
+function polyhedron_rotation_to_pole(id, n = 5, m = 2) = 
+	assert(is_element(list_polyhedra(), id), str("polyhedron_faces_circumradius: ", id, " is not a valid polyhedron."))
+	let(
+		pole = [0, 0, circumradius_factor(id, n, m)],
+		poly_p = polyhedron_vertices(id, n, m)[0],
+		// Polyhedron may already be aligned in which case norm(axis) == 0, this is caught later.
+		axis = normal_vector([0, 0, 0], pole, poly_p),
+		rot = acos(pole * poly_p / (norm(pole) * norm(poly_p)))
+	) norm(axis) == 0 || is_undef(axis) ? [0, [0, 0, 1]] : [rot, axis];
+		
 // Returns the dihedral angle between two polyhedron faces (f1 and f2 are lists of vertex numbers).
 // This is the angle between f1, the edge (f1-f2) and f2.
+// TODO: Fix issue with minus signs (example twisted prisms).
 function dihedral_angle(vertices, f1, f2) = let
 (
 	n1 = face_normal(vertices, f1),
@@ -692,6 +734,63 @@ function partial_dihedral_angle(vertices, f1, f2) = let
 
 // Returns the length of the given edge (e) of the polyhedron.
 function edge_length(vertices, e) = norm(vertices[e[0]] - vertices[e[1]]);
+
+// Returns the planar angles of each vertex in the face.
+function face_vertex_angles(vertices, face) = let 
+(
+	points = [for (f = face) vertices[f]]
+) [for(n = [1 : len(points)]) vertex_angle(points[n - 1], points[n % len(points)], points[(n + 1) % len(points)])]; 
+function vertex_angle(p1, p2, p3) = acos((p1 - p2) * (p3 - p2) / (norm(p1 - p2) * norm(p3 - p2)));
+
+// Returns the edge lengthes of all edges of the face.
+function face_edge_lengths(vertices, face) = let
+(
+	points = [for (f = face) vertices[f]],
+	n_max = len(points)
+) [for(n = [1 : n_max]) norm(points[n - 1] - points[n % n_max])]; 
+	
+// Returns the surface area of the face.
+function face_area(vertices, face) = let
+(
+	// Construct a normalized basis for the face and project the 3d face onto this 2d plane.
+	points = [for (f = face) vertices[f]],
+	normal = plane_orthonormal(points),
+	center = mean(points),
+	points_centered = [for (p = points) p - center],
+	ex = points_centered[0] / norm(points_centered[0]),
+	ey = cross(ex, normal),
+	points_2d = [for (p = points_centered) [ex * p, ey * p]]
+) polygon_area(points_2d);
+
+
+////////////////////////////
+// Polyhedron Information //
+////////////////////////////
+
+// Returns all different (i.e. unique) dihedral angles of the polyhedron.
+function dihedral_angles(id, n = 5, m = 2) = let (
+		faces = polyhedron_faces(id, n = n, m = m),
+		vertices = polyhedron_vertices(id, n = n, m = m),
+		edges = polyhedron_edges(id, n = n, m = m)
+) delete_duplicates([for (e = edges) let (f = faces_connected_to_edge(faces, e)) dihedral_angle(vertices, f[0], f[1])]);
+
+// Returns the edge lengths for each face of the polyhedron.
+function faces_edge_lengths(id, n = 5, m = 2) = let (
+		faces = polyhedron_faces(id, n = n, m = m),
+		vertices = polyhedron_vertices(id, n = n, m = m)
+) [for (f = faces) face_edge_lengths(vertices, f)];
+
+// Returns the vertex angles for each face of the polyhedron.
+function faces_vertex_angles(id, n = 5, m = 2) = let (
+		faces = polyhedron_faces(id, n = n, m = m),
+		vertices = polyhedron_vertices(id, n = n, m = m)
+) [for (f = faces) face_vertex_angles(vertices, f)];
+
+// Returns the area for each face of the polyhedron.
+function faces_areas(id, n = 5, m = 2) = let (
+		faces = polyhedron_faces(id, n = n, m = m),
+		vertices = polyhedron_vertices(id, n = n, m = m)
+) [for (f = faces) face_area(vertices, f)];
 
 
 /////////////////
@@ -758,7 +857,7 @@ function rotation_matrix(rot) = let
 function line_intersection(v1, v2, v3, v4) = let (a = v1 - v2, b = v4 - v3, c = v3 - v1) v1 + a * (cross(c, b) * cross(a, b)) / pow(norm(cross(a, b)), 2);
 
 // Calculates the distance between two parallel planes.
-function parallel_plane_distance(p1, p2) = let (n1 = plane_orthonormal(p1), n2 = plane_orthonormal(p2)) assert(norm(n1 - n2) < pow(10, -5)) abs((p1[0] - p2[0]) * n1);
+function parallel_plane_distance(p1, p2) = let (n1 = plane_orthonormal(p1), n2 = plane_orthonormal(p2)) assert(norm(n1 - n2) < pow(10, -5) || norm(n1 - n2) - 2 < pow(10, -5), str("p1 !|| p2, n1 - n2 = ", norm(n1 - n2))) abs((p1[0] - p2[0]) * n1);
 function plane_orthonormal(p) = let(v1 = p[0] -  mean(p), v2 = p[1] - mean(p), n = cross(v2, v1)) n / norm(n);
 
 // Returns the intersection point between a line (l1, l2) and a plane - point (p1) and normal (n).
@@ -777,7 +876,7 @@ function rotation_to_points(p1, p2) = let(
 	) [rx, 0, rz];
 
 // Returns the normal vector for a plane given by three points.
-function normal_vector(p1, p2, p3) = let(n = cross(p2 - p1, p3 - p1)) n / norm(n);
+function normal_vector(p1, p2, p3) = let(n = cross(p2 - p1, p3 - p1)) norm(n) == 0 ? undef : n / norm(n);
 function face_normal(vertices, face) = let(points = [for (v = face) vertices[v]]) normal_vector(points[0], points[1], points[2]);
 
 // Gives the faces for a right prism, where the two main surfaces are simple n-gons.
@@ -789,14 +888,52 @@ function right_prism_faces(n) = concat(
 	[for (k = [0 : n - 1]) [k % n, (k + 1) % n, n + (k + 1) % n, n + k % n]]
 );
 
-// Constructs a regular n-gon with specified radius (r).
-module regular_polygon(n = 3, r = 1)
-{
-     polygon([for (i = [0 : n - 1]) [r * cos(i * 360 / n), r * sin(i * 360 / n)]]);
-}
 
+//////////////
+// Polygons //
+//////////////
+
+// Vertices in [x, y] for a regular n-gon with radius (r) and first point [r, 0].
 function regular_polygon_vertices(n = 3, r = 1) = [for (i = [0 : n - 1]) [r * cos(i * 360 / n), r * sin(i * 360 / n)]];
 
+// Constructs a regular n-gon with radius (r).
+module regular_polygon(n = 3, r = 1)
+{
+     polygon(regular_polygon_vertices(n = n, r = r));
+}
+
+// Constructs a regular n-gononal ring with radius (r) and width (w).
+module regular_polygon_ring(n = 3, r = 1, w = 1)
+{
+	r_diff = regular_polygon_radius(n = n, a = regular_polygon_apothem(n = n, r = r) - w);
+    difference()
+	{
+		polygon(regular_polygon_vertices(n = n, r = r));
+		polygon(regular_polygon_vertices(n = n, r = r_diff));
+	}
+}
+
+// Returns the side length of a regular n-gon with radius (r). 
+function regular_polygon_side(n = 3, r = 1) = 2 * r * sin(180 / n);
+
+// Returns the apothem (or radius of the inscribed circle) of a regular n-gon with radius (r).
+function regular_polygon_apothem(n = 3, r = 1) = r * cos(180 / n);
+
+// Returns the radius of a regular n-gon with apothem (a).
+// TODO: get radius from side length as well (needs naming scheme).
+function regular_polygon_radius(n = 3, a = 1) = a / cos(180 / n);
+
+// Returns the  regular n-gon with radius (r).
+function regular_polygon_internal_angle(n) = 180 * (n - 2) / n;
+
+// Calculates the area of an irregular polygon with points as a list of [x, y] coordinates.
+function polygon_area(points) = let
+(
+	n = len(points),
+	xy = [for (m = [0 : n - 1]) points[m][0] * points[(m + 1) % n][1]],
+	yx = [for (m = [0 : n - 1]) points[m][1] * points[(m + 1) % n][0]]
+) abs((sum(xy) - sum(yx)) / 2);
+	
 
 ///////////////
 // Debugging //

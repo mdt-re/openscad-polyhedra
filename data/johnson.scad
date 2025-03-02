@@ -154,3 +154,30 @@ FACES_SNUB_DISPHENOID = [
 	[2, 4, 5], [3, 5, 4]
 ];
 CIRCUMRADIUS_SNUB_DISPHENOID = sqrt(1/4 + pow(CONSTANT_SNUB_DISPHENOID_S, 2));
+
+
+// Source: https://en.wikipedia.org/wiki/Bilunabirotunda
+VERTICES_BILUNABIROTUNDA = [
+	[0, 0, +PHI / 2],
+	[0, 0, -PHI / 2],
+	
+	[+(PHI + 1) / 2, +1/2],
+	[+(PHI + 1) / 2, -1/2],
+	[-(PHI + 1) / 2, +1/2],
+	[-(PHI + 1) / 2, -1/2],
+	
+	[+1/2, +PHI / 2, +1/2],
+	[+1/2, +PHI / 2, -1/2],
+	[+1/2, -PHI / 2, +1/2],
+	[+1/2, -PHI / 2, -1/2],
+	[-1/2, +PHI / 2, +1/2],
+	[-1/2, +PHI / 2, -1/2],
+	[-1/2, -PHI / 2, +1/2],	
+	[-1/2, -PHI / 2, -1/2],
+];
+FACES_BILUNABIROTUNDA = [
+	[0, 8, 12], [0, 10, 6], [1, 13, 9], [1, 7, 11], [2, 6, 7], [3, 9, 8], [4, 11, 10], [5, 12, 13],
+	[6, 10, 11, 7], [8, 9, 13, 12],
+	[0, 6, 2, 3, 8], [0, 12, 5, 4, 10], [1, 11, 4, 5, 13], [1, 9, 3, 2, 7],
+];
+CIRCUMRADIUS_BILUNABIROTUNDA = 1; // TODO

@@ -15,32 +15,28 @@ use <tube_connectors.scad>;
 //////////////
 
 // Polyhedron for which to construct connectors, the radius specifies where the center of the tubes meet.
-poly = "snub_dodecahedron";
+poly = "rhombic_dodecahedron"; //"icosahedron";
 poly_n = 5;
 poly_m = 2;
-radius = 200;
+radius = 300;
 // Render accuracy: use a high value (>= 32) when rendering for a 3d print.
 $fn = 32;
-// Inner radius of the tube.
-d_inner = 6;
-// Outer radius of the tube.
-d_outer = 8;
-// Depth to which the connector pin inserts into the tube, similar to inner radius of the tube should work fine.
-pin_depth = 6;
+// Inner diameter of the tube.
+d_inner = 10;
+// Outer diameter of the tube.
+d_outer = 12;
+// Depth to which the connector pin inserts into the tube, similar to inner diamter of the tube should work fine.
+pin_depth = 10;
 // Render all the pins to view the model [disable to create an stl file for 3d printing].
-render_pins = true;
+render_pins = false;
 // Render all the tubes to view the model [disable to create an stl file for 3d printing].
-render_tubes = true;
+render_tubes = false;
 // Geometries may require multiple different pins, this renders a single pin for 3d printing, first pin index equals zero, render_pins and render_tubes must be deactivated.
-render_pin_nr = 0;
-// Render supports for 3d printing to enhance sticking of these small parts to the print bed.
-// TODO: not yet implemented.
-render_supports = true;
+render_pin_nr = 1;
 // Renders a hole into the connector pin, such that a power cable can be placed in the polyhedron structure for lighting purposes.
-cable_diameter = 0;
-
-
-
+d_cable = 0;
+// Renders a screw hole of diameter d into each of the pins for a connection to the tube.
+d_pin_hole = 1.5;
 
 
 ///////////////
@@ -71,12 +67,14 @@ for (n = [0 : len(tube_lengths_list) - 1])
 	length = tube_lengths_list[n];
 	echo(str(" - ", length[1], " tubes with length = ", length[0], " mm"));
 }
+echo(str(" - tube inner diameter = ", d_inner, " mm"));
+echo(str(" - tube outer diameter = ", d_outer, " mm"));
 
 // Render all pins.
 if (render_pins)
 {
 	color("Cyan", 1)
-		connector_pins(id = poly, n = poly_n, m = poly_m, r = radius, d_in = d_inner, d_out = d_outer, h_in = pin_depth);
+		connector_pins(id = poly, n = poly_n, m = poly_m, r = radius, d_in = d_inner, d_out = d_outer, h_in = pin_depth, d_pin_hole = d_pin_hole);
 }
 // Render all tubes.
 if (render_tubes)
@@ -92,8 +90,8 @@ if (!render_pins && ! render_pins)
 	color("Cyan", 1)
 		difference()
 		{
-			single_connector_pin(id = poly, n = poly_n, m = poly_m, pin_nr = render_pin_nr, r = radius, d_in = d_inner, d_out = d_outer, h_in = pin_depth, supports = render_supports);
-			if (cable_diameter > 0)
-				cylinder(d = cable_diameter, h = 1000, center = true);
+			single_connector_pin(id = poly, n = poly_n, m = poly_m, pin_nr = render_pin_nr, r = radius, d_in = d_inner, d_out = d_outer, h_in = pin_depth, d_pin_hole = d_pin_hole);
+			if (d_cable > 0)
+				cylinder(d = d_cable, h = 1000, center = true);
 		}
 }

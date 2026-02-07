@@ -23,7 +23,7 @@ RENDER_EPS = 0.001;
 
 // Constructs a single pin with inner and outer diameter and inner and outer height.
 // Serves as a building block for the connector pin.
-module round_pin(d_in, d_out, h_in, h_out)
+module round_pin(d_in, d_out, h_in, h_out, d_pin_hole)
 {
 	union()
 	{	
@@ -38,19 +38,20 @@ module round_pin(d_in, d_out, h_in, h_out)
 		translate([0, 0, -h_out])
 			cylinder(d = d_out, h = h_out);
 		// Add a cylinder which fits into the tube, i.e. has the same inner radius.
-		// Do this using a threaded rod which makes fitting into the tube easier.
+		// Add round hole for tube connection options.
 		translate([0, 0, -h_out - h_in / 2 + RENDER_EPS])
-			difference()
+			union()
 			{
 				cylinder(d = d_in, h = h_in, center = true);
-				//threaded_rod(d = d_in, l = h_in);
-				//cylinder(d = max(d_in - 4, 0), h = h_in + 2 * RENDER_EPS, center = true);
+				// Round hole.
+				//rotate([0, 90, 0])
+				//	cylinder(d = d_pin_hole, h = d_out, center = true);
 			}
 	}
 }
 
 // Constructs a connector pin for a point p connecting to other points.
-module connector_pin(d_in, d_out, h_in, p, connect_to, min_angle)
+module connector_pin(d_in, d_out, h_in, d_pin_hole, p, connect_to, min_angle)
 {
 	// Loop over all points to which to connect, these lie along the edges that meet in the vertex.
 	for (c = connect_to)
@@ -69,12 +70,17 @@ module connector_pin(d_in, d_out, h_in, p, connect_to, min_angle)
 		// Add round pin to form the connector.
 		translate(p)
 			rotate(r, r_axis)
-				round_pin(d_in, d_out, h_in, h_out);
+				//rotate([0, 0, 5]) Needs to rotate for hole
+					round_pin(d_in, d_out, h_in, h_out, d_pin_hole);
+		
 	}
+	// DEBUG
+	//translate(p)
+	//	round_pin(d_in, d_out, h_in, d_out, d_pin_hole);
 }
 
 // Renders a single connector pin for 3d printing purposes.
-module single_connector_pin(id, pin_nr, a = 1, n = 5, m = 2, r = 0, d_in = 1, d_out = 2, h_in = 1, supports = false)
+module single_connector_pin(id, pin_nr, a = 1, n = 5, m = 2, r = 0, d_in = 4, d_out = 6, h_in = 4, d_pin_hole = 0)
 {
 	vertices = polyhedron_vertices(id, n = n, m = m);
 	edges = polyhedron_edges(id, n = n, m = m);
@@ -97,11 +103,11 @@ module single_connector_pin(id, pin_nr, a = 1, n = 5, m = 2, r = 0, d_in = 1, d_
 	// Render connector pin at the center.
 	rotate(r, axis)
 		translate(-p)
-			connector_pin(d_in, d_out, h_in, p, connect_to, min_angle);
+			connector_pin(d_in, d_out, h_in, d_pin_hole, p, connect_to, min_angle);
 }
 
 // Renders all connector pins for a polyhedron.
-module connector_pins(id, a = 1, n = 5, m = 2, r = 0, d_in = 1, d_out = 2, h_in = 1)
+module connector_pins(id, a = 1, n = 5, m = 2, r = 0, d_in = 4, d_out = 6, h_in = 4, d_pin_hole = 0)
 {
 	vertices = polyhedron_vertices(id, n = n, m = m);
 	edges = polyhedron_edges(id, n = n, m = m);
@@ -115,7 +121,7 @@ module connector_pins(id, a = 1, n = 5, m = 2, r = 0, d_in = 1, d_out = 2, h_in 
 		connect_to = [for (c = connecting_v) side * vertices[c]];
 		min_angle = min(get_vertex_angles(v, vertices, faces, edges));
 		//echo(str("v = ", v, "; connect_to = ", connecting_v, "; angles = ", get_vertex_angles(v, vertices, faces, edges)));
-		connector_pin(d_in, d_out, h_in, p, connect_to, min_angle);
+		connector_pin(d_in, d_out, h_in, d_pin_hole, p, connect_to, min_angle);
 	}		
 }
 
@@ -125,7 +131,7 @@ module connector_pins(id, a = 1, n = 5, m = 2, r = 0, d_in = 1, d_out = 2, h_in 
 ///////////
 
 // Renders all connector tubes for a polyhedron.
-module connector_tubes(id, a = 1, n = 5, m = 5, r = 0, d_in = 1, d_out = 2, h_in = 1)
+module connector_tubes(id, a = 1, n = 5, m = 5, r = 0, d_in = 4, d_out = 6, h_in = 4)
 {
 	vertices = polyhedron_vertices(id, n = n, m = m);
 	edges = polyhedron_edges(id, n = n, m = m);
